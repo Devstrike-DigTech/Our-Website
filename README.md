@@ -1,37 +1,112 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Devstrike Digital Limited - Official Website
 
-## Getting Started
+Welcome to the official GitHub repository for the **Devstrike Digital Limited** website. This repository contains the codebase and assets for our company’s public-facing site.
 
-First, run the development server:
+## About Devstrike Digital Limited
+
+**Devstrike Digital Limited** is a dynamic tech company that specializes in crafting cutting-edge digital solutions. Our focus is on software development, website design, mobile applications, and more, all aimed at helping businesses and individuals thrive in the digital age.
+
+Our mission is to revolutionize innovation, enhance tech appreciation, and transform skill acquisition through cutting-edge digital solutions. We believe in fostering a future where technology empowers and enriches lives.
+
+For more about our story, services, and team, visit our [website](https://devstrike.org) or explore our repository for the source code and structure of the site.
+
+---
+
+## Features
+
+- **Responsive Design**: Optimized for all screen sizes from mobile to desktop.
+- **Careers Section**: Stay up to date with open vacancies and opportunities at Devstrike.
+- **Projects**: Showcase of our latest and past digital solutions.
+- **Contact Us**: Integrated contact form for direct inquiries and engagement.
+- **Dynamic Content**: Easily modifiable content, including testimonials, case studies, and more.
+
+---
+
+## Technologies Used
+
+This project is built using the following technologies:
+
+- **Next.js**: For server-side rendering and static site generation.
+- **React**: Frontend JavaScript library for building the user interface.
+- **Tailwind CSS**: For utility-first, responsive design.
+- **TypeScript**: For static typing and improved developer experience.
+- **FontAwesome**: Icons for various sections and UI elements.
+- **Yarn**: Package manager for faster dependency management.
+
+---
+
+## Installation
+
+To run the project locally, follow these steps:
+
+1. **Clone the repository**:
+   ```bash
+   git clone https://github.com/Devstrike-DigTech/Our-Website.git
+   ```
+2. **Navigate to the project directory**:
+
+   ```bash
+   cd official-website
+   ```
+
+3. **Install dependencies** using Yarn:
+
+   ```bash
+   yarn install
+   ```
+
+4. **Run the development server**:
+
+   ```bash
+   yarn dev
+   ```
+
+   Open [http://localhost:3000](http://localhost:3000) in your browser to see the website.
+
+---
+
+## Deployment
+
+The project is set up for deployment on popular platforms like **Vercel** and **Netlify**. To deploy, follow the specific instructions for your platform or host.
+
+For Vercel:
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+vercel --prod
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+---
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Contributing
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+We welcome contributions to improve the website or add new features. To contribute:
 
-## Learn More
+1. Fork the repository.
+2. Create a new feature branch (`git checkout -b feature/my-feature`).
+3. Commit your changes (`git commit -m 'Add my feature'`).
+4. Push to the branch (`git push origin feature/my-feature`).
+5. Open a pull request for review.
 
-To learn more about Next.js, take a look at the following resources:
+---
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## License
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+This repository is licensed under the [MIT License](LICENSE).
 
-## Deploy on Vercel
+---
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Contact
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
-# Our-Website
+If you have any questions or need assistance, feel free to contact us:
+
+- **Website**: [https://devstrike.org](https://devstrike.org)
+- **Email**: [info@devstrike.org](mailto:info@devstrike.org)
+
+Follow us on social media:
+
+- **Twitter**: [@DevstrikeLtd](https://twitter.com/DevstrikeLtd)
+- **LinkedIn**: [Devstrike Digital Limited](https://linkedin.com/company/devstrike)
+
+---
+
+This repository is maintained by **Devstrike Digital Limited**.
