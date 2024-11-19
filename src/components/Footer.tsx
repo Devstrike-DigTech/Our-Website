@@ -93,7 +93,7 @@ const Footer: React.FC<FooterProps> = ({
           {/* Social Media Column */}
           <div>
             <h3 className="text-lg font-semibold mb-4">Connect With Us</h3>
-            <div className="flex flex-wrap gap-4">
+            <div className="flex flex-wrap gap-4 lg:flex-col lg:items-start">
               {[
                 { icon: faTwitter, name: 'Twitter' },
                 { icon: faLinkedin, name: 'LinkedIn' },
@@ -103,10 +103,15 @@ const Footer: React.FC<FooterProps> = ({
                 <Link 
                   key={social.name}
                   href="#"
-                  className="w-10 h-10 rounded-full bg-gray-700 flex items-center justify-center
-                           hover:bg-gray-600 transition-colors duration-200"
+                  className="flex items-center group"
                 >
-                  <FontAwesomeIcon icon={social.icon as any} className="w-5 h-5" />
+                    <div className="w-10 h-10 rounded-full bg-gray-700 flex items-center justify-center
+                          hover:bg-gray-600 transition-colors duration-200">
+              <FontAwesomeIcon icon={social.icon as any} className="w-5 h-5" />
+            </div>
+                   <span className="hidden lg:block ml-3 text-white group-hover:text-gray-600">
+              {social.name}
+            </span>
                 </Link>
               ))}
             </div>
@@ -160,7 +165,7 @@ const Footer: React.FC<FooterProps> = ({
         </div>
 
         {/* Divider */}
-        <div className="h-px bg-gray-700 my-8" />
+        <div className="h-px bg-[#881B51] my-8" />
 
         {/* Bottom Footer */}
         <div className="flex flex-col md:flex-row justify-between items-center gap-4">
