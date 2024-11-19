@@ -24,7 +24,7 @@ export default function ImageComponent({
   blurDataURL, // Optional blur placeholder
 }: CustomImageProps) {
   return (
-    <div className={`relative bg-black w-full h-auto ${fill ? 'h-full' : ''}`}>
+    <div className={`relative w-full h-auto ${fill ? 'h-full' : ''}`}>
       <Image
         src={src}
         alt={alt}

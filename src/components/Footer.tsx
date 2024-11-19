@@ -1,134 +1,188 @@
-'use client';
-import { FaFacebookF, FaInstagram, FaTwitter } from 'react-icons/fa';
-import Link from 'next/link';
+"use client"
 
-export default function Footer () {
+import React, { useState } from 'react';
+import Link from 'next/link';
+import Image from 'next/image';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { 
+  faPhone, 
+  faEnvelope, 
+  faLocationDot 
+} from '@fortawesome/free-solid-svg-icons';
+import { 
+  faTwitter, 
+  faLinkedin, 
+  faGithub, 
+  faInstagram 
+} from '@fortawesome/free-brands-svg-icons';
+
+interface FooterProps {
+  logo: string;
+  address: string;
+  phone: string;
+  email: string;
+}
+
+const Footer: React.FC<FooterProps> = ({
+  logo,
+  address,
+  phone,
+  email
+}) => {
+  const [formData, setFormData] = useState({
+    contactType: '',
+    name: '',
+    message: ''
+  });
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    // Handle form submission
+    console.log(formData);
+  };
+
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="bg-gray-800 text-white py-8">
-      {/* Footer Content */}
-      <div className="container mx-auto px-4">
-        <div className="flex flex-col lg:flex-row justify-between">
-          {/* Column 1: Business Info */}
-          <div className="mb-6 lg:mb-0 lg:w-1/4">
-            <h2 className="text-2xl font-bold">Energy Doctor</h2>
-            <p className="mt-4 text-gray-400">
-              Providing sustainable energy solutions to homes and businesses.
-            </p>
-            <div className="flex space-x-4 mt-4">
-              {/* Social Media Icons */}
-              <a
-                href="https://www.facebook.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-8 h-8 bg-white text-gray-800 rounded-full flex justify-center items-center hover:bg-gray-300"
-              >
-                <FaFacebookF />
-              </a>
-              <a
-                href="https://www.x.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-8 h-8 bg-white text-gray-800 rounded-full flex justify-center items-center hover:bg-gray-300"
-              >
-                <FaTwitter />
-              </a>
-              <a
-                href="https://www.instagram.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-8 h-8 bg-white text-gray-800 rounded-full flex justify-center items-center hover:bg-gray-300"
-              >
-                <FaInstagram />
-              </a>
+    <footer className="bg-[#1B1831] text-white">
+      <div className="container mx-auto px-4 md:px-6 lg:px-8 py-12">
+        {/* Main Footer Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12 mb-12">
+          {/* Company Info Column */}
+          <div className="space-y-4">
+            <Image 
+              src={logo} 
+              alt="Devstrike Logo" 
+              width={150} 
+              height={50} 
+              className="mb-4"
+            />
+            <div className="space-y-3">
+              <div className="flex items-center gap-3">
+                <FontAwesomeIcon icon={faLocationDot} className="w-4 h-4 text-gray-400" />
+                <p className="text-sm text-gray-300">{address}</p>
+              </div>
+              <div className="flex items-center gap-3">
+                <FontAwesomeIcon icon={faPhone} className="w-4 h-4 text-gray-400" />
+                <p className="text-sm text-gray-300">{phone}</p>
+              </div>
+              <div className="flex items-center gap-3">
+                <FontAwesomeIcon icon={faEnvelope} className="w-4 h-4 text-gray-400" />
+                <p className="text-sm text-gray-300">{email}</p>
+              </div>
             </div>
           </div>
 
-          {/* Column 2: About */}
-          <div className="mb-6 lg:mb-0 lg:w-1/4">
-            <h3 className="text-xl font-semibold">About</h3>
-            <ul className="mt-4 space-y-2">
-              <li>
-                <Link href="/how-it-works" className="text-gray-400 hover:underline">How it works
-                </Link>
-              </li>
-              <li>
-                <Link href="/featured" className="text-gray-400 hover:underline">Featured
-                </Link>
-              </li>
-              <li>
-                <Link href="/partnership" className="text-gray-400 hover:underline">Partnership
-                </Link>
-              </li>
-              <li>
-                <Link href="/business-relation" className="text-gray-400 hover:underline">Business Relation
-                </Link>
-              </li>
+          {/* Quick Links Column */}
+          <div>
+            <h3 className="text-lg font-semibold mb-4">Quick Links</h3>
+            <ul className="space-y-2">
+              {['Projects', 'Careers', 'Contents', 'About Us', 'Services'].map((item) => (
+                <li key={item}>
+                  <Link 
+                    href={`/${item.toLowerCase().replace(' ', '-')}`}
+                    className="text-gray-300 hover:text-white transition-colors duration-200"
+                  >
+                    {item}
+                  </Link>
+                </li>
+              ))}
             </ul>
           </div>
 
-          {/* Column 3: Similar to About */}
-          <div className="mb-6 lg:mb-0 lg:w-1/4">
-            <h3 className="text-xl font-semibold">Community</h3>
-            <ul className="mt-4 space-y-2">
-              <li>
-                <Link href="/solar-installation" className="text-gray-400 hover:underline">Events
+          {/* Social Media Column */}
+          <div>
+            <h3 className="text-lg font-semibold mb-4">Connect With Us</h3>
+            <div className="flex flex-wrap gap-4">
+              {[
+                { icon: faTwitter, name: 'Twitter' },
+                { icon: faLinkedin, name: 'LinkedIn' },
+                { icon: faGithub, name: 'GitHub' },
+                { icon: faInstagram, name: 'Instagram' }
+              ].map((social) => (
+                <Link 
+                  key={social.name}
+                  href="#"
+                  className="w-10 h-10 rounded-full bg-gray-700 flex items-center justify-center
+                           hover:bg-gray-600 transition-colors duration-200"
+                >
+                  <FontAwesomeIcon icon={social.icon as any} className="w-5 h-5" />
                 </Link>
-              </li>
-              <li>
-                <Link href="/energy-consulting" className="text-gray-400 hover:underline">Blogs
-                </Link>
-              </li>
-              <li>
-                <Link href="/energy-saving" className="text-gray-400 hover:underline">Podcast
-                </Link>
-              </li>
-              <li>
-                <Link href="/maintenance" className="text-gray-400 hover:underline">Invite a friend
-                </Link>
-              </li>
-            </ul>
+              ))}
+            </div>
           </div>
 
-          {/* Column 4: Similar to About */}
-          <div className="lg:w-1/4">
-            <h3 className="text-xl font-semibold">Support</h3>
-            <ul className="mt-4 space-y-2">
-              <li>
-                <Link href="/faq" className="text-gray-400 hover:underline">FAQ
-                </Link>
-              </li>
-              <li>
-                <Link href="/contact" className="text-gray-400 hover:underline">Contact Us
-                </Link>
-              </li>
-              <li>
-                <Link href="/warranty" className="text-gray-400 hover:underline">+234 (0) 812 345 6789
-                </Link>
-              </li>
-              <li>
-                <Link href="/sustainability" className="text-gray-400 hover:underline">Sustainability
-                </Link>
-              </li>
-            </ul>
+          {/* Contact Form Column */}
+          <div>
+            <h3 className="text-lg font-semibold mb-4">Contact Us</h3>
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <select
+                value={formData.contactType}
+                onChange={(e) => setFormData({ ...formData, contactType: e.target.value })}
+                className="w-full px-3 py-2 bg-gray-700 rounded-lg focus:outline-none focus:ring-2 
+                         focus:ring-purple-500"
+                required
+              >
+                <option value="">Select Contact Type</option>
+                <option value="enquiry">Enquiry</option>
+                <option value="investment">Investment</option>
+                <option value="service">Service</option>
+              </select>
+
+              <input
+                type="text"
+                placeholder="Your Name"
+                value={formData.name}
+                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                className="w-full px-3 py-2 bg-gray-700 rounded-lg focus:outline-none focus:ring-2 
+                         focus:ring-purple-500"
+                required
+              />
+
+              <textarea
+                placeholder="Your Message"
+                value={formData.message}
+                onChange={(e) => setFormData({ ...formData, message: e.target.value })}
+                className="w-full px-3 py-2 bg-gray-700 rounded-lg focus:outline-none focus:ring-2 
+                         focus:ring-purple-500 min-h-[100px]"
+                required
+              />
+
+              <button
+                type="submit"
+                className="w-full bg-purple-600 hover:bg-purple-700 text-white font-medium py-2 px-4 
+                         rounded-lg transition-colors duration-200"
+              >
+                Send Message
+              </button>
+            </form>
           </div>
         </div>
 
-        {/* Horizontal Line */}
-        <div className="border-t border-gray-600 my-6"></div>
+        {/* Divider */}
+        <div className="h-px bg-gray-700 my-8" />
 
-        {/* Footer Bottom */}
-        <div className="flex flex-col lg:flex-row justify-between items-center text-gray-400">
-          <p>&copy; {currentYear} Energy Doctor. All rights reserved.</p>
-          <div className="flex space-x-4 mt-4 lg:mt-0">
-            <Link href="/privacy-policy" className="hover:underline">Privacy Policy
-            </Link>
-            <Link href="/terms-conditions" className="hover:underline">Terms & Conditions
-            </Link>
+        {/* Bottom Footer */}
+        <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+          <p className="text-sm text-gray-400">
+            © {currentYear} Devstrike. All rights reserved.
+          </p>
+
+          <div className="flex items-center gap-6">
+            {['Terms', 'Conditions', 'Cookies'].map((item) => (
+              <Link
+                key={item}
+                href={`/${item.toLowerCase()}`}
+                className="text-sm text-gray-400 hover:text-white transition-colors duration-200"
+              >
+                {item}
+              </Link>
+            ))}
           </div>
         </div>
       </div>
     </footer>
   );
 };
+
+export default Footer;

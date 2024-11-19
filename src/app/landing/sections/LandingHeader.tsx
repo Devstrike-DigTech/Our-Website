@@ -1,3 +1,5 @@
+import { ourIntro } from "@/constants";
+
 function LandingHeader() {
   return (
     <header className="bg-white py-12 px-4 ">
@@ -13,8 +15,8 @@ function LandingHeader() {
       </h1>
 
       {/* Subheading */}
-    <p className="text-gray-600 text-lg sm:text-xl mb-8 w-full sm:w-1/2 ">
-  This is Devstrike Digital Limited: Where Innovation Fuels Our Passion for a Brighter Tomorrow. Join Us on a Journey of Exploration and Discovery, Where Creativity Knows No Bounds and Technology Leads the Way. Step into a World Where Ideas Flourish and Dreams Become Reality. Together, Let's Build a Future Fueled by Innovation and Possibility.
+    <p className="text-sm md:text-base text-gray-600 mb-8 w-full sm:w-1/2 text-justify">
+  {ourIntro}
 </p>
 
       {/* Buttons */}
