@@ -27,7 +27,7 @@ const Section: React.FC<SectionProps> = ({
   return (
     <div className="container mx-auto px-4 md:px-6 lg:px-8 py-12">
       {/* Section Title */}
-      <p className="text-purple-600 text-justify font-medium mb-3 text-sm md:text-base">
+      <p className="text-primary text-justify font-medium mb-3 text-sm md:text-base">
         {sectionTitle}
       </p>
 

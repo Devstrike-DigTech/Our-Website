@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "../styles/globals.css"
@@ -46,9 +48,9 @@ export default function RootLayout({
         {children}
         <Footer
   logo={logo}
-  address="123 Tech Street, Digital City, DC 12345"
-  phone="+1 (234) 567-8900"
-  email="contact@devstrike.com"
+  address="House 9, Kobi Makaranta, Asokoro Extension, Guzape, Abuja, FCT, Nigeria"
+  phone="+234 (0) 813 266 5650"
+  email="devstrike.digtech@gmail.com"
 />
       </body>
     </html>

@@ -43,6 +43,13 @@ const Footer: React.FC<FooterProps> = ({
 
   const currentYear = new Date().getFullYear();
 
+  const socialLinks = [
+  { icon: faTwitter, name: "Twitter", url: "https://x.com/devstrikeltd" },
+  { icon: faLinkedin, name: "LinkedIn", url: "https://www.linkedin.com/in/devstrike-digital-limited/" },
+  { icon: faGithub, name: "GitHub", url: "https://github.com/Devstrike-DigTech" },
+  { icon: faInstagram, name: "Instagram", url: "https://www.instagram.com/devstrike.limited/profilecard/?igsh=MjR2OWEyamhvMnF4" }
+];
+
   return (
     <footer className="bg-[#1B1831] text-white">
       <div className="container mx-auto px-4 md:px-6 lg:px-8 py-12">
@@ -50,13 +57,13 @@ const Footer: React.FC<FooterProps> = ({
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12 mb-12">
           {/* Company Info Column */}
           <div className="space-y-4">
-            <Image 
-              src={logo} 
-              alt="Devstrike Logo" 
-              width={150} 
-              height={50} 
-              className="mb-4"
-            />
+             <Image
+        src={logo}
+        alt="Devstrike"
+        width={60}
+        height={60}
+        className="object-cover rounded-lg"
+      />
             <div className="space-y-3">
               <div className="flex items-center gap-3">
                 <FontAwesomeIcon icon={faLocationDot} className="w-4 h-4 text-gray-400" />
@@ -92,31 +99,26 @@ const Footer: React.FC<FooterProps> = ({
 
           {/* Social Media Column */}
           <div>
-            <h3 className="text-lg font-semibold mb-4">Connect With Us</h3>
-            <div className="flex flex-wrap gap-4 lg:flex-col lg:items-start">
-              {[
-                { icon: faTwitter, name: 'Twitter' },
-                { icon: faLinkedin, name: 'LinkedIn' },
-                { icon: faGithub, name: 'GitHub' },
-                { icon: faInstagram, name: 'Instagram' }
-              ].map((social) => (
-                <Link 
-                  key={social.name}
-                  href="#"
-                  className="flex items-center group"
-                >
-                    <div className="w-10 h-10 rounded-full bg-gray-700 flex items-center justify-center
-                          hover:bg-gray-600 transition-colors duration-200">
-              <FontAwesomeIcon icon={social.icon as any} className="w-5 h-5" />
+      <h3 className="text-lg font-semibold mb-4">Connect With Us</h3>
+      <div className="flex flex-wrap gap-4 lg:flex-col lg:items-start">
+        {socialLinks.map((social) => (
+          <Link
+            key={social.name}
+            href={social.url} // Set the actual link for each social media
+            className="flex items-center group"
+            target="_blank" // Open the link in a new tab
+            rel="noopener noreferrer" // Add security measures when opening the link
+          >
+            <div className="w-10 h-10 rounded-full bg-gray-700 flex items-center justify-center hover:bg-gray-600 transition-colors duration-200">
+              <FontAwesomeIcon icon={social.icon as any} className="w-5 h-5 text-white" />
             </div>
-                   <span className="hidden lg:block ml-3 text-white group-hover:text-gray-600">
+            <span className="hidden lg:block ml-3 text-white group-hover:text-gray-600">
               {social.name}
             </span>
-                </Link>
-              ))}
-            </div>
-          </div>
-
+          </Link>
+        ))}
+      </div>
+    </div>
           {/* Contact Form Column */}
           <div>
             <h3 className="text-lg font-semibold mb-4">Contact Us</h3>
@@ -125,7 +127,7 @@ const Footer: React.FC<FooterProps> = ({
                 value={formData.contactType}
                 onChange={(e) => setFormData({ ...formData, contactType: e.target.value })}
                 className="w-full px-3 py-2 bg-gray-700 rounded-lg focus:outline-none focus:ring-2 
-                         focus:ring-purple-500"
+                         focus:ring-primary"
                 required
               >
                 <option value="">Select Contact Type</option>
@@ -140,7 +142,7 @@ const Footer: React.FC<FooterProps> = ({
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                 className="w-full px-3 py-2 bg-gray-700 rounded-lg focus:outline-none focus:ring-2 
-                         focus:ring-purple-500"
+                         focus:ring-primary"
                 required
               />
 
@@ -149,13 +151,13 @@ const Footer: React.FC<FooterProps> = ({
                 value={formData.message}
                 onChange={(e) => setFormData({ ...formData, message: e.target.value })}
                 className="w-full px-3 py-2 bg-gray-700 rounded-lg focus:outline-none focus:ring-2 
-                         focus:ring-purple-500 min-h-[100px]"
+                         focus:ring-primary min-h-[100px]"
                 required
               />
 
               <button
                 type="submit"
-                className="w-full bg-purple-600 hover:bg-purple-700 text-white font-medium py-2 px-4 
+                className="w-full bg-primary hover:bg-purple-700 text-white font-medium py-2 px-4 
                          rounded-lg transition-colors duration-200"
               >
                 Send Message

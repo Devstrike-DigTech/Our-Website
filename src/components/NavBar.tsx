@@ -113,7 +113,7 @@ export const Navbar = () => {
     <div className=' hidden md:flex md:items-center'>
       <Link
         href='/auth'
-        className='mx-2 bg-gradient-to-b from-[#951E59] to-[#353B77] hover:from-[#353B77] hover:to-[#951E59] text-white font-bold px-4 py-2 rounded-md shadow-md transition-all'
+        className='mx-2 bg-gradient-to-b from-primary to-[#353B77] hover:from-[#353B77] hover:to-primary text-white font-bold px-4 py-2 rounded-md shadow-md transition-all'
       >
         Contact Us
       </Link>

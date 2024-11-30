@@ -21,7 +21,7 @@ export default function Landing (){
   onButtonClick={() => console.log('Button clicked!')}
 />
 <Section
-  sectionTitle="Our Identiy"
+  sectionTitle="Our Identity"
   header="Devstrike Digital Limited is a dynamic tech company dedicated to crafting cutting-edge digital solutions."
   subheader="We specialise in software development, website design, and mobile applications, helping businesses and individuals thrive in the digital age." // optional
   body={ourIdentity}
