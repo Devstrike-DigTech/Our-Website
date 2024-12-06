@@ -15,10 +15,7 @@ export default function Landing (){
         <LandingHeader />
         <HeroHeader
   imageSrc={bannerImg}
-  title="Welcome to Our Platform"
-  description="Discover amazing features and possibilities with our cutting-edge solution."
-  buttonText="Get Started"
-  onButtonClick={() => console.log('Button clicked!')}
+  
 />
 <Section
   sectionTitle="Our Identity"

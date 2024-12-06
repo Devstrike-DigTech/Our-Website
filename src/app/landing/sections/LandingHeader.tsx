@@ -31,8 +31,8 @@ function LandingHeader() {
 
         {/* Get in touch button */}
         <a
-          href="/contact"
-          className="bg-gradient-to-b from-[#951E59] to-[#353B77] hover:from-[#353B77] hover:to-[#951E59] text-white font-bold py-3 px-6 rounded-md w-full sm:w-auto"
+          href="#footer"
+          className="bg-gradient-to-b from-[#951E59] to-[#353B77] hover:from-[#353B77] hover:to-[#951E59] text-white font-bold py-3 px-6 rounded-md w-full sm:w-auto transition duration-300"
         >
           Get in touch
         </a>

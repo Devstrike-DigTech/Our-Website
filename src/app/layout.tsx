@@ -8,19 +8,10 @@ import { config } from '@fortawesome/fontawesome-svg-core'
 import '@fortawesome/fontawesome-svg-core/styles.css' // Import the CSS
 import Footer from "@/components/Footer";
 import { logo } from "@/utils";
+import { ToastContainer } from "react-toastify";
+import 'react-toastify/dist/ReactToastify.css';
+
 config.autoAddCss = false // Prevent Font Awesome from adding its own CSS
-
-
-const geistSans = localFont({
-  src: "../../public/fonts/GeistVF.woff",
-  variable: "--font-geist-sans",
-  weight: "100 900",
-});
-const geistMono = localFont({
-  src: "../../public/fonts/GeistMonoVF.woff",
-  variable: "--font-geist-mono",
-  weight: "100 900",
-});
 
 const urbanist = localFont({
   src: [{path: "../../public/fonts/Urbanist-BlackItalic.ttf",
@@ -32,6 +23,7 @@ const urbanist = localFont({
 export const metadata: Metadata = {
   title: "Devstrike",
   description: "Empowering Innovation, Transforming Tomorrow",
+  icons: "/assets/images/logo.svg"
 };
 
 export default function RootLayout({
@@ -52,6 +44,8 @@ export default function RootLayout({
   phone="+234 (0) 813 266 5650"
   email="devstrike.digtech@gmail.com"
 />
+      <ToastContainer position="top-right" autoClose={3000} />
+
       </body>
     </html>
   );

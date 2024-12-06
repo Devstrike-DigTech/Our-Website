@@ -2,8 +2,8 @@ import React, { useEffect, useState } from 'react';
 
 interface HeroHeaderProps {
   imageSrc: string;
-  title: string;
-  description: string;
+  title?: string;
+  description?: string;
   buttonText?: string;
   onButtonClick?: () => void;
 }
