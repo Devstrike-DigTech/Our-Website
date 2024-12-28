@@ -24,7 +24,7 @@ function LandingHeader() {
         {/* Discover Projects button */}
         <a
           href="/projects"
-          className="bg-[#E4C7D566] hover:bg-[#753A52] text-[#951E59] font-bold py-3 px-6 rounded-md w-full sm:w-auto"
+          className="bg-[#E4C7D566] hover:bg-[#753A52] text-[#951E59] hover:text-white font-bold py-3 px-6 rounded-md w-full sm:w-auto"
         >
           Discover Projects
         </a>
