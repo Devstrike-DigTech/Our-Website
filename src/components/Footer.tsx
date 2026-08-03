@@ -4,20 +4,22 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { 
-  faPhone, 
-  faEnvelope, 
-  faLocationDot 
+import {
+  faPhone,
+  faEnvelope,
+  faLocationDot
 } from '@fortawesome/free-solid-svg-icons';
-import { 
-  faTwitter, 
-  faLinkedin, 
-  faGithub, 
-  faInstagram 
+import {
+  faXTwitter,
+  faLinkedin,
+  faGithub,
+  faInstagram,
+  faWhatsapp,
+  faYoutube,
 } from '@fortawesome/free-brands-svg-icons';
-import { addDoc, collection } from 'firebase/firestore';
-import { db } from '@/config/firebase';
 import { toast } from 'react-toastify';
+import type { IconProp } from '@fortawesome/fontawesome-svg-core';
+import { API_URL } from '@/lib/api';
 
 interface FooterProps {
   logo: string;
@@ -26,230 +28,207 @@ interface FooterProps {
   email: string;
 }
 
-interface ContactFormData {
-  contactType: string;
-  name: string;
-  email: string;
-  message: string;
-}
+const PRODUCT_LINKS = [
+  { label: 'Projects', href: '/projects' },
+  { label: 'Careers', href: '/careers' },
+  { label: 'Content', href: '/content' },
+  { label: 'About Us', href: '/#our-identity' },
+];
 
+const SOCIAL_LINKS = [
+  { icon: faXTwitter, name: 'X-Twitter', url: 'https://x.com/devstrikeltd' },
+  { icon: faLinkedin, name: 'LinkedIn', url: 'https://www.linkedin.com/in/devstrike-digital-limited/' },
+  { icon: faGithub, name: 'GitHub', url: 'https://github.com/Devstrike-DigTech' },
+  { icon: faInstagram, name: 'Instagram', url: 'https://www.instagram.com/devstrike.limited/profilecard/?igsh=MjR2OWEyamhvMnF4' },
+  { icon: faWhatsapp, name: "What's App", url: 'https://wa.me/2348132665650' },
+  { icon: faYoutube, name: 'Youtube', url: 'https://www.youtube.com/@devstrike' },
+];
 
-const Footer: React.FC<FooterProps> = ({
-  logo,
-  address,
-  phone,
-  email
-}) => {
+const Footer: React.FC<FooterProps> = ({ logo, address, phone, email }) => {
   const [formData, setFormData] = useState({
     contactType: '',
     name: '',
     email: '',
     message: ''
   });
-   const [isLoading, setIsLoading] = useState(false);
-  const [isSuccess, setIsSuccess] = useState(false);
-  const [isError, setIsError] = useState(false);
-
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    setIsError(false);
-    setIsSuccess(false);
-
     try {
-      await addDoc(collection(db, 'contacts'), formData);
-      setIsSuccess(true);
+      const res = await fetch(`${API_URL}/api/contacts`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData),
+      });
+      if (!res.ok) throw new Error('Request failed');
       toast.success('Message sent successfully!');
       setFormData({ contactType: '', name: '', email: '', message: '' });
-    } catch (error) {
-      console.error('Error saving message to Firestore:', error);
-      setIsError(true);
+    } catch {
       toast.error('Failed to send message. Please try again.');
     } finally {
       setIsLoading(false);
     }
   };
-    // Handle form submission
-    // console.log(formData);
-  
 
   const currentYear = new Date().getFullYear();
 
-  const socialLinks = [
-  { icon: faTwitter, name: "Twitter", url: "https://x.com/devstrikeltd" },
-  { icon: faLinkedin, name: "LinkedIn", url: "https://www.linkedin.com/in/devstrike-digital-limited/" },
-  { icon: faGithub, name: "GitHub", url: "https://github.com/Devstrike-DigTech" },
-  { icon: faInstagram, name: "Instagram", url: "https://www.instagram.com/devstrike.limited/profilecard/?igsh=MjR2OWEyamhvMnF4" }
-];
+  const inputClasses =
+    'w-full px-3 py-2.5 rounded-lg bg-white/5 border border-white/15 text-sm text-white placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-primary';
 
   return (
-    <footer id='footer' className="bg-[#1B1831] text-white">
-      <div className="container mx-auto px-4 md:px-6 lg:px-8 py-12">
-        {/* Main Footer Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12 mb-12">
-          {/* Company Info Column */}
+    <footer id="footer" className="bg-ink text-white">
+      <div className="container mx-auto px-4 md:px-6 lg:px-8 py-14">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-[1.3fr_0.8fr_0.8fr_1.1fr] gap-10 lg:gap-12 mb-12">
+          {/* Company info */}
           <div className="space-y-4">
-             <Image
-        src={logo}
-        alt="Devstrike"
-        width={60}
-        height={60}
-        className="object-cover rounded-lg"
-      />
+            <Image
+              src={logo}
+              alt="Devstrike"
+              width={56}
+              height={56}
+              className="rounded-lg object-cover"
+            />
+            <p className="text-xs tracking-widest text-gray-400">&lt;/dev strike&gt;</p>
             <div className="space-y-3">
-              <div className="flex items-center gap-3">
-                <FontAwesomeIcon icon={faLocationDot} className="w-4 h-4 text-gray-400" />
-                <p className="text-sm text-gray-300">{address}</p>
+              <div className="flex items-start gap-3">
+                <FontAwesomeIcon icon={faLocationDot} className="mt-1 h-4 w-4 text-gray-400" />
+                <p className="text-sm text-gray-300">
+                  <span className="font-semibold text-white">Head Office: </span>
+                  {address}
+                </p>
               </div>
-              <div className="flex items-center gap-3">
-                <FontAwesomeIcon icon={faPhone} className="w-4 h-4 text-gray-400" />
-                <p className="text-sm text-gray-300">{phone}</p>
+              <div className="flex items-start gap-3">
+                <FontAwesomeIcon icon={faPhone} className="mt-1 h-4 w-4 text-gray-400" />
+                <p className="text-sm text-gray-300">
+                  <span className="font-semibold text-white">Phone: </span>
+                  {phone}
+                </p>
               </div>
-              <div className="flex items-center gap-3">
-                <FontAwesomeIcon icon={faEnvelope} className="w-4 h-4 text-gray-400" />
-                <p className="text-sm text-gray-300">{email}</p>
+              <div className="flex items-start gap-3">
+                <FontAwesomeIcon icon={faEnvelope} className="mt-1 h-4 w-4 text-gray-400" />
+                <p className="text-sm text-gray-300">
+                  <span className="font-semibold text-white">Email: </span>
+                  {email}
+                </p>
               </div>
             </div>
           </div>
 
-          {/* Quick Links Column */}
+          {/* Product links */}
           <div>
-            <h3 className="text-lg font-semibold mb-4">Quick Links</h3>
-            <ul className="space-y-2">
-              {['Projects', 'Careers', 'Contents'].map((item) => (
-                <li key={item}>
-                  <Link 
-                    href={`/${item.toLowerCase().replace(' ', '-')}`}
-                    className="text-gray-300 hover:text-white transition-colors duration-200"
+            <h3 className="mb-4 text-sm font-semibold uppercase tracking-wide text-gray-400">
+              Product
+            </h3>
+            <ul className="space-y-2.5">
+              {PRODUCT_LINKS.map((item) => (
+                <li key={item.label}>
+                  <Link
+                    href={item.href}
+                    className="text-sm text-gray-300 transition-colors hover:text-white"
                   >
-                    {item}
+                    {item.label}
                   </Link>
                 </li>
               ))}
             </ul>
           </div>
 
-          {/* Social Media Column */}
+          {/* Social links */}
           <div>
-      <h3 className="text-lg font-semibold mb-4">Connect With Us</h3>
-      <div className="flex flex-wrap gap-4 lg:flex-col lg:items-start">
-        {socialLinks.map((social) => (
-          <Link
-            key={social.name}
-            href={social.url} // Set the actual link for each social media
-            className="flex items-center group"
-            target="_blank" // Open the link in a new tab
-            rel="noopener noreferrer" // Add security measures when opening the link
-          >
-            <div className="w-10 h-10 rounded-full bg-gray-700 flex items-center justify-center hover:bg-gray-600 transition-colors duration-200">
-              <FontAwesomeIcon icon={social.icon as any} className="w-5 h-5 text-white" />
-            </div>
-            <span className="hidden lg:block ml-3 text-white group-hover:text-gray-600">
-              {social.name}
-            </span>
-          </Link>
-        ))}
-      </div>
-    </div>
-          {/* Contact Form Column */}
+            <h3 className="mb-4 text-sm font-semibold uppercase tracking-wide text-gray-400">
+              Social
+            </h3>
+            <ul className="space-y-2.5">
+              {SOCIAL_LINKS.map((social) => (
+                <li key={social.name}>
+                  <Link
+                    href={social.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="group flex items-center gap-3"
+                  >
+                    <FontAwesomeIcon
+                      icon={social.icon as IconProp}
+                      className="h-4 w-4 text-gray-400 transition-colors group-hover:text-white"
+                    />
+                    <span className="text-sm text-gray-300 transition-colors group-hover:text-white">
+                      {social.name}
+                    </span>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Contact form */}
           <div>
-            <h3 className="text-lg font-semibold mb-4">Contact Us</h3>
-            <form onSubmit={handleSubmit} className="space-y-4">
+            <h3 className="mb-4 text-sm font-semibold uppercase tracking-wide text-gray-400">
+              Contact Form
+            </h3>
+            <form onSubmit={handleSubmit} className="space-y-3">
               <select
                 value={formData.contactType}
                 onChange={(e) => setFormData({ ...formData, contactType: e.target.value })}
-                className="w-full px-3 py-2 bg-gray-700 rounded-lg focus:outline-none focus:ring-2 
-                         focus:ring-primary"
+                className={inputClasses}
                 required
               >
-                <option value="">Select Contact Type</option>
-                <option value="enquiry">Enquiry</option>
-                <option value="investment">Investment</option>
-                <option value="service">Service</option>
+                <option value="" className="text-black">Contact Type</option>
+                <option value="enquiry" className="text-black">Enquiry</option>
+                <option value="investment" className="text-black">Investment</option>
+                <option value="service" className="text-black">Service</option>
               </select>
 
               <input
                 type="text"
-                placeholder="Your Name"
+                placeholder="Name"
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                className="w-full px-3 py-2 bg-gray-700 rounded-lg focus:outline-none focus:ring-2 
-                         focus:ring-primary"
+                className={inputClasses}
                 required
               />
 
               <input
                 type="email"
-                placeholder="Your Email"
+                placeholder="Email"
                 value={formData.email}
                 onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                className="w-full px-3 py-2 bg-gray-700 rounded-lg focus:outline-none focus:ring-2 
-                         focus:ring-primary"
+                className={inputClasses}
                 required
               />
 
               <textarea
-                placeholder="Your Message"
+                placeholder="Message"
                 value={formData.message}
                 onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                className="w-full px-3 py-2 bg-gray-700 rounded-lg focus:outline-none focus:ring-2 
-                         focus:ring-primary min-h-[100px]"
+                className={`${inputClasses} min-h-[90px]`}
                 required
               />
 
               <button
                 type="submit"
-                className="w-full bg-primary hover:bg-secondary text-white font-medium py-2 px-4 
-                         rounded-lg transition-colors duration-200"
+                disabled={isLoading}
+                className="rounded-lg bg-primary px-6 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-primary/80 disabled:opacity-60"
               >
-                {isLoading ? (
-            <>
-              <svg
-                className="w-5 h-5 text-white animate-spin"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-              >
-                <circle
-                  className="opacity-25"
-                  cx="12"
-                  cy="12"
-                  r="10"
-                  stroke="currentColor"
-                  strokeWidth="4"
-                ></circle>
-                <path
-                  className="opacity-75"
-                  fill="currentColor"
-                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.963 7.963 0 014 12H0c0 2.577 1.032 4.911 2.709 6.709l1.291-1.418z"
-                ></path>
-              </svg>
-              Sending...
-            </>
-          ) : (
-            'Send Message'
-          )}
+                {isLoading ? 'Sending…' : 'Submit'}
               </button>
             </form>
           </div>
         </div>
 
-        {/* Divider */}
-        <div className="h-px bg-[#881B51] my-8" />
+        <div className="my-8 h-px bg-[#881B51]" />
 
-        {/* Bottom Footer */}
-        <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+        <div className="flex flex-col items-center justify-between gap-4 md:flex-row">
           <p className="text-sm text-gray-400">
             © {currentYear} Devstrike. All rights reserved.
           </p>
-
           <div className="flex items-center gap-6">
-            {['Terms', 'Conditions', 'Cookies'].map((item) => (
+            {['Terms', 'Privacy', 'Cookies'].map((item) => (
               <Link
                 key={item}
                 href={`/${item.toLowerCase()}`}
-                className="text-sm text-gray-400 hover:text-white transition-colors duration-200"
+                className="text-sm text-gray-400 transition-colors hover:text-white"
               >
                 {item}
               </Link>

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 
 interface HeroHeaderProps {
   imageSrc: string;
@@ -15,66 +15,70 @@ const HeroHeader: React.FC<HeroHeaderProps> = ({
   buttonText,
   onButtonClick
 }) => {
-  const [scrollPosition, setScrollPosition] = useState(0);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [offset, setOffset] = useState(0);
 
   useEffect(() => {
     const handleScroll = () => {
-      const position = window.scrollY;
-      setScrollPosition(position);
+      const el = containerRef.current;
+      if (!el) return;
+      const rect = el.getBoundingClientRect();
+      // Progress of the section through the viewport: -1 (below) → 1 (above)
+      const progress =
+        (window.innerHeight - rect.top) / (window.innerHeight + rect.height);
+      const clamped = Math.min(1, Math.max(0, progress));
+      // The image is 120% tall (10% overflow on each side), so ±10% stays covered.
+      setOffset((clamped - 0.5) * 0.2 * rect.height);
     };
 
+    handleScroll();
     window.addEventListener('scroll', handleScroll, { passive: true });
-
-    return () => {
-      window.removeEventListener('scroll', handleScroll);
-    };
+    return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // Calculate parallax offset - adjust the division factor to control parallax intensity
-  const parallaxOffset = scrollPosition / 2;
-
   return (
-    <div className="relative w-full h-[60vh] md:h-[70vh] lg:h-[80vh] overflow-hidden">
-      {/* Background Image with Parallax */}
-      <div 
-        className="absolute inset-0 w-full h-[120%]" // Extra height for parallax movement
-        style={{
-          backgroundImage: `url(${imageSrc})`,
-          backgroundPosition: 'center',
-          backgroundSize: 'cover',
-          backgroundRepeat: 'no-repeat',
-          transform: `translateY(${parallaxOffset}px)`,
-          transition: 'transform 0.1s cubic-bezier(0,0,0.2,1)', // Smooth transition for performance
-          willChange: 'transform', // Optimization for animations
-        }}
+    <div className="container mx-auto px-4 md:px-6 lg:px-8">
+      <div
+        ref={containerRef}
+        className="relative h-[50vh] w-full overflow-hidden rounded-xl md:h-[60vh] lg:h-[70vh]"
       >
-        {/* Overlay for better text readability */}
-        <div className="absolute inset-0 bg-black/40" />
-      </div>
+        {/* Background image with contained parallax */}
+        <div
+          className="absolute -top-[10%] left-0 h-[120%] w-full"
+          style={{
+            backgroundImage: `url(${imageSrc})`,
+            backgroundPosition: 'center',
+            backgroundSize: 'cover',
+            backgroundRepeat: 'no-repeat',
+            transform: `translateY(${offset}px)`,
+            willChange: 'transform',
+          }}
+        >
+          <div className="absolute inset-0 bg-black/40" />
+        </div>
 
-      {/* Content Container - No parallax effect on content */}
-      <div className="relative h-full flex flex-col items-center justify-center px-4 md:px-8 lg:px-16">
-        <div className="text-center max-w-4xl mx-auto">
-          <h1 
-            className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-4 lg:mb-6"
-          >
-            {title}
-          </h1>
-          <p 
-            className="text-lg md:text-xl text-white/90 mb-8 max-w-2xl mx-auto"
-          >
-            {description}
-          </p>
-          {buttonText && (
-            <button
-              onClick={onButtonClick}
-              className="px-6 py-3 bg-white text-gray-900 rounded-lg font-semibold 
-                       hover:bg-gray-100 transition-colors duration-200
-                       transform hover:scale-105"
-            >
-              {buttonText}
-            </button>
-          )}
+        {/* Content */}
+        <div className="relative flex h-full flex-col items-center justify-center px-4 md:px-8">
+          <div className="mx-auto max-w-4xl text-center">
+            {title && (
+              <h1 className="mb-4 text-3xl font-bold text-white md:text-4xl lg:mb-6 lg:text-5xl">
+                {title}
+              </h1>
+            )}
+            {description && (
+              <p className="mx-auto mb-8 max-w-2xl text-lg text-white/90 md:text-xl">
+                {description}
+              </p>
+            )}
+            {buttonText && (
+              <button
+                onClick={onButtonClick}
+                className="rounded-lg bg-white px-6 py-3 font-semibold text-gray-900 transition-colors duration-200 hover:bg-gray-100"
+              >
+                {buttonText}
+              </button>
+            )}
+          </div>
         </div>
       </div>
     </div>

@@ -14,10 +14,16 @@ import 'react-toastify/dist/ReactToastify.css';
 config.autoAddCss = false // Prevent Font Awesome from adding its own CSS
 
 const urbanist = localFont({
-  src: [{path: "../../public/fonts/Urbanist-BlackItalic.ttf",
-    weight: "100 900",
-  }],
-  variable: "--font-urbanist"
+  src: [
+    { path: "../../public/fonts/Urbanist-Regular.ttf", weight: "400", style: "normal" },
+    { path: "../../public/fonts/Urbanist-Italic.ttf", weight: "400", style: "italic" },
+    { path: "../../public/fonts/Urbanist-Medium.ttf", weight: "500", style: "normal" },
+    { path: "../../public/fonts/Urbanist-SemiBold.ttf", weight: "600", style: "normal" },
+    { path: "../../public/fonts/Urbanist-Bold.ttf", weight: "700", style: "normal" },
+    { path: "../../public/fonts/Urbanist-ExtraBold.ttf", weight: "800", style: "normal" },
+  ],
+  variable: "--font-urbanist",
+  display: "swap",
 });
 
 export const metadata: Metadata = {
@@ -32,20 +38,17 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body
-        className={`${urbanist} antialiased bg-white`}
-      >
+    <html lang="en" className={urbanist.variable}>
+      <body className="font-sans antialiased bg-white">
         <Navbar />
         {children}
         <Footer
-  logo={logo}
-  address="House 9, Kobi Makaranta, Asokoro Extension, Guzape, Abuja, FCT, Nigeria"
-  phone="+234 (0) 813 266 5650"
-  email="devstrike.digtech@gmail.com"
-/>
-      <ToastContainer position="top-right" autoClose={3000} />
-
+          logo={logo}
+          address="House 9, Kobi Makaranta, Asokoro Extension, Guzape, Abuja, FCT, Nigeria"
+          phone="+234 (0) 813 266 5650"
+          email="devstrike.digtech@gmail.com"
+        />
+        <ToastContainer position="top-right" autoClose={3000} />
       </body>
     </html>
   );

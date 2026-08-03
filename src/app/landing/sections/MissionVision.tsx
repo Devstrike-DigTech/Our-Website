@@ -7,28 +7,22 @@ interface MissionVisionProps {
 
 const MissionVision: React.FC<MissionVisionProps> = ({ mission, vision }) => {
   return (
-    <section className="w-full py-16 md:py-24" style={{
-      background: 'linear-gradient(to bottom, #931F5A, #353B77)'
-    }}>
-      <div className="container mx-auto px-4 md:px-6 lg:px-8">
-        {/* Grid container */}
-        <div className="grid lg:grid-cols-2 gap-12 lg:gap-24">
-          {/* Mission Column */}
-          <div className="text-white">
-            <h2 className="text-3xl md:text-4xl font-bold mb-6">
-              Mission
-            </h2>
-            <p className="text-white/90 text-base md:text-lg leading-relaxed text-justify">
+    <section className="container mx-auto px-4 md:px-6 lg:px-8">
+      <div
+        className="w-full rounded-2xl px-6 py-14 md:px-12 md:py-20"
+        style={{ background: 'linear-gradient(135deg, #931F5A 0%, #353B77 100%)' }}
+      >
+        <div className="mx-auto grid max-w-4xl gap-12 lg:grid-cols-2 lg:gap-24">
+          <div className="text-center text-white lg:text-left">
+            <h2 className="mb-6 text-3xl font-bold md:text-4xl">Mission</h2>
+            <p className="text-base leading-relaxed text-white/90 md:text-lg">
               {mission}
             </p>
           </div>
 
-          {/* Vision Column */}
-          <div className="text-white">
-            <h2 className="text-3xl md:text-4xl font-bold mb-6">
-              Vision
-            </h2>
-            <p className="text-white/90 text-base md:text-lg leading-relaxed text-justify">
+          <div className="text-center text-white lg:text-left">
+            <h2 className="mb-6 text-3xl font-bold md:text-4xl">Vision</h2>
+            <p className="text-base leading-relaxed text-white/90 md:text-lg">
               {vision}
             </p>
           </div>
