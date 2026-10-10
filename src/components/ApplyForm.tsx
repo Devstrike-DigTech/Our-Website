@@ -3,7 +3,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { toast } from 'react-toastify';
-import { LuArrowRight, LuFileText, LuUploadCloud, LuX } from 'react-icons/lu';
+import { LuArrowRight, LuFileText, LuCloudUpload, LuX } from 'react-icons/lu';
 import { API_URL } from '@/lib/api';
 
 interface ApplyFormProps {
@@ -212,7 +212,7 @@ const ApplyForm: React.FC<ApplyFormProps> = ({
                       {cv ? (
                         <LuFileText className='h-5 w-5' />
                       ) : (
-                        <LuUploadCloud className='h-5 w-5' />
+                        <LuCloudUpload className='h-5 w-5' />
                       )}
                     </span>
                     <span className='min-w-0'>

@@ -1,11 +1,11 @@
 import React from 'react';
 import type { IconType } from 'react-icons';
-import { LuCode2, LuHeart, LuUsers } from 'react-icons/lu';
+import { LuCodeXml, LuHeart, LuUsers } from 'react-icons/lu';
 import { identityHeadline, ourIdentity, values } from '@/constants';
 import Reveal from '../ui/Reveal';
 import SectionHeading from '../ui/SectionHeading';
 
-const VALUE_ICONS: IconType[] = [LuHeart, LuCode2, LuUsers];
+const VALUE_ICONS: IconType[] = [LuHeart, LuCodeXml, LuUsers];
 
 export default function Identity() {
   const sentences = ourIdentity.split('. ');
