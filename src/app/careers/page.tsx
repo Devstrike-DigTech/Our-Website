@@ -4,13 +4,17 @@ import PageHero from '@/components/PageHero';
 import Pagination from '@/components/Pagination';
 import TeamCard from '@/components/cards/TeamCard';
 import VacancyCard from '@/components/cards/VacancyCard';
+import { EmptyState, HeroTabs } from '@/components/ui/Content';
+import Reveal from '@/components/ui/Reveal';
 import {
   apiGet,
   emptyPage,
   Paginated,
   TeamGrouped,
+  TeamMember,
   Vacancy,
 } from '@/lib/api';
+import { plural } from '@/lib/format';
 
 export const metadata: Metadata = {
   title: 'Careers — Devstrike',
@@ -27,6 +31,8 @@ interface Props {
   };
 }
 
+const EMPTY_TEAM: TeamGrouped = { ceo: [], board: [], departmentHeads: [] };
+
 export default async function CareersPage({ searchParams }: Props) {
   const isManagement = searchParams.view === 'management';
 
@@ -37,129 +43,179 @@ export default async function CareersPage({ searchParams }: Props) {
   params.set('page', searchParams.page ?? '1');
   params.set('limit', '8');
 
-  const [vacancies, roles, team] = await Promise.all([
+  const [vacancies, allVacancies, roles, team] = await Promise.all([
     isManagement
       ? Promise.resolve(emptyPage<Vacancy>())
-      : apiGet<Paginated<Vacancy>>(`/vacancies?${params}`, emptyPage<Vacancy>()),
-    apiGet<string[]>('/vacancies/roles', []),
+      : apiGet<Paginated<Vacancy>>(
+          `/vacancies?${params}`,
+          emptyPage<Vacancy>()
+        ),
+    apiGet<Paginated<Vacancy>>('/vacancies?limit=1', emptyPage<Vacancy>()),
     isManagement
-      ? apiGet<TeamGrouped>('/team/grouped', {
-          ceo: [],
-          board: [],
-          departmentHeads: [],
-        })
-      : Promise.resolve(null),
+      ? Promise.resolve([])
+      : apiGet<string[]>('/vacancies/roles', []),
+    apiGet<TeamGrouped>('/team/grouped', EMPTY_TEAM),
   ]);
+
+  const teamCount =
+    team.ceo.length + team.board.length + team.departmentHeads.length;
 
   const hrefFor = (page: number) => {
     const next = new URLSearchParams(params);
     next.set('page', String(page));
-    return `/careers?${next.toString()}`;
+    next.delete('limit');
+    return `/careers?${next.toString()}#results`;
   };
 
   return (
     <main>
       <PageHero
-        title="Careers"
-        subtitle="Work on real products with real ownership — join the team building Devstrike."
-      />
-
-      <div className="container mx-auto flex flex-col gap-10 px-4 py-12 md:px-6 lg:flex-row lg:gap-14 lg:px-8">
-        <FilterSidebar
-          searchPlaceholder="Search roles"
-          resetParams={['page', 'search', 'role']}
-          groups={[
+        eyebrow={<span className='eyebrow-light'>Careers</span>}
+        title={
+          <>
+            Build products that matter —{' '}
+            <span className='text-gradient-light'>with us.</span>
+          </>
+        }
+        subtitle='Work on real products with real ownership. Join a project team, or meet the people leading Devstrike.'
+      >
+        <HeroTabs
+          tabs={[
             {
-              title: 'Status',
-              param: 'view',
-              options: [
-                { label: 'Vacancies', value: 'vacancies' },
-                { label: 'Management', value: 'management' },
-              ],
+              label: 'Open roles',
+              href: '/careers',
+              active: !isManagement,
+              count: allVacancies.total,
             },
-            ...(!isManagement
-              ? [
-                  {
-                    title: 'Roles',
-                    param: 'role',
-                    options: [
-                      { label: 'All', value: 'all' },
-                      ...roles.map((r) => ({ label: r, value: r })),
-                    ],
-                  },
-                ]
-              : []),
+            {
+              label: 'Management',
+              href: '/careers?view=management',
+              active: isManagement,
+              count: teamCount,
+            },
           ]}
         />
+      </PageHero>
 
-        <div className="min-w-0 flex-1">
-          {isManagement && team ? (
-            <ManagementView team={team} />
-          ) : (
-            <>
-              {vacancies.items.length === 0 ? (
-                <p className="py-16 text-center text-gray-500">
-                  No open roles match these filters right now.
+      {isManagement ? (
+        <ManagementView team={team} />
+      ) : (
+        <section
+          id='results'
+          className='container flex scroll-mt-24 flex-col gap-10 py-14 md:py-20 lg:flex-row lg:gap-12'
+        >
+          <FilterSidebar
+            searchPlaceholder='Search roles'
+            groups={[
+              {
+                title: 'Role',
+                param: 'role',
+                options: [
+                  { label: 'All roles', value: 'all' },
+                  ...roles.map((r) => ({ label: r, value: r })),
+                ],
+              },
+            ]}
+          />
+
+          <div className='min-w-0 flex-1'>
+            {vacancies.items.length === 0 ? (
+              <EmptyState
+                title='No roles found'
+                description='No open roles match these filters right now — try another role or check back soon.'
+                resetHref='/careers'
+              />
+            ) : (
+              <>
+                <p className='mb-6 text-sm font-semibold text-ink/50'>
+                  Showing {vacancies.items.length} of{' '}
+                  {plural(vacancies.total, 'open role')}
                 </p>
-              ) : (
-                <div>
-                  {vacancies.items.map((vacancy) => (
-                    <VacancyCard key={vacancy.id} vacancy={vacancy} />
+                <div className='grid gap-5'>
+                  {vacancies.items.map((vacancy, i) => (
+                    <Reveal key={vacancy.id} delay={Math.min(i, 3) * 70}>
+                      <VacancyCard vacancy={vacancy} />
+                    </Reveal>
                   ))}
                 </div>
-              )}
-              <Pagination
-                page={vacancies.page}
-                pages={vacancies.pages}
-                hrefFor={hrefFor}
-              />
-            </>
-          )}
-        </div>
-      </div>
+              </>
+            )}
+            <Pagination
+              page={vacancies.page}
+              pages={vacancies.pages}
+              hrefFor={hrefFor}
+            />
+          </div>
+        </section>
+      )}
     </main>
   );
 }
 
-function ManagementView({ team }: { team: TeamGrouped }) {
+function TeamGroup({
+  title,
+  members,
+  columns,
+}: {
+  title: string;
+  members: TeamMember[];
+  columns: string;
+}) {
+  if (members.length === 0) return null;
   return (
-    <div className="space-y-12">
-      {team.ceo.length > 0 && (
-        <section>
-          <h2 className="mb-6 text-2xl font-bold text-gray-900">CEO</h2>
-          <div className="grid gap-8 border-b border-gray-100 pb-10 sm:grid-cols-2">
-            {team.ceo.map((member) => (
-              <TeamCard key={member.id} member={member} />
-            ))}
-          </div>
-        </section>
-      )}
-
-      {team.board.length > 0 && (
-        <section>
-          <h2 className="mb-6 text-2xl font-bold text-gray-900">
-            Board of Directors
-          </h2>
-          <div className="grid gap-8 border-b border-gray-100 pb-10 sm:grid-cols-2">
-            {team.board.map((member) => (
-              <TeamCard key={member.id} member={member} />
-            ))}
-          </div>
-        </section>
-      )}
-
-      {team.departmentHeads.length > 0 && (
-        <section>
-          <h2 className="mb-6 text-2xl font-bold text-gray-900">
-            Department Heads
-          </h2>
-          <div className="grid gap-8 sm:grid-cols-2">
-            {team.departmentHeads.map((member) => (
-              <TeamCard key={member.id} member={member} />
-            ))}
-          </div>
-        </section>
-      )}
+    <div>
+      <Reveal>
+        <div className='mb-6 flex items-center gap-4'>
+          <h2 className='text-2xl font-extrabold text-ink'>{title}</h2>
+          <span className='h-px flex-1 bg-ink/[0.07]' />
+          <span className='text-sm font-semibold text-ink/40'>
+            {members.length}
+          </span>
+        </div>
+      </Reveal>
+      <div className={`grid gap-5 ${columns}`}>
+        {members.map((member, i) => (
+          <Reveal key={member.id} delay={(i % 3) * 80} className='h-full'>
+            <TeamCard
+              member={member}
+              featured={title === 'Chief Executive Officer'}
+            />
+          </Reveal>
+        ))}
+      </div>
     </div>
+  );
+}
+
+function ManagementView({ team }: { team: TeamGrouped }) {
+  if (team.ceo.length + team.board.length + team.departmentHeads.length === 0) {
+    return (
+      <div className='container py-20'>
+        <EmptyState
+          title='Team profiles coming soon'
+          description='We are putting together profiles of the people leading Devstrike.'
+        />
+      </div>
+    );
+  }
+
+  return (
+    <section className='container space-y-16 py-14 md:py-20'>
+      <TeamGroup
+        title='Chief Executive Officer'
+        members={team.ceo}
+        columns=''
+      />
+      <TeamGroup
+        title='Board of Directors'
+        members={team.board}
+        columns='sm:grid-cols-2 lg:grid-cols-4'
+      />
+      <TeamGroup
+        title='Department Heads'
+        members={team.departmentHeads}
+        columns='sm:grid-cols-2 lg:grid-cols-4'
+      />
+    </section>
   );
 }

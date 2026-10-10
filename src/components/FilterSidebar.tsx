@@ -1,8 +1,8 @@
 'use client';
 
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
-import React, { useEffect, useState } from 'react';
-import { IoSearchOutline } from 'react-icons/io5';
+import React, { useEffect, useState, useTransition } from 'react';
+import { LuSearch, LuX } from 'react-icons/lu';
 
 export interface FilterGroup {
   title: string;
@@ -18,8 +18,9 @@ interface FilterSidebarProps {
 }
 
 /**
- * Sidebar with a search box and single-select filter groups, matching the
- * Figma listing layouts. State lives in the URL so server components refetch.
+ * Search box plus single-select filter groups. A sticky panel on desktop,
+ * horizontally scrolling chips on mobile. State lives in the URL so the
+ * server component refetches.
  */
 const FilterSidebar: React.FC<FilterSidebarProps> = ({
   groups,
@@ -30,6 +31,7 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
   const pathname = usePathname();
   const params = useSearchParams();
   const [search, setSearch] = useState(params.get('search') ?? '');
+  const [isPending, startTransition] = useTransition();
 
   useEffect(() => {
     setSearch(params.get('search') ?? '');
@@ -40,56 +42,86 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
     resetParams.forEach((p) => next.delete(p));
     if (value === null || value === '') next.delete(param);
     else next.set(param, value);
-    router.push(`${pathname}?${next.toString()}`);
+    startTransition(() => {
+      router.push(`${pathname}?${next.toString()}`, { scroll: false });
+    });
   };
 
   return (
-    <aside className="w-full lg:w-56 lg:shrink-0">
-      <form
-        onSubmit={(e) => {
-          e.preventDefault();
-          apply('search', search || null);
-        }}
-        className="relative mb-8"
+    <aside className='w-full lg:sticky lg:top-28 lg:w-64 lg:shrink-0 lg:self-start'>
+      <div
+        className={`transition-opacity duration-300 lg:max-h-[calc(100vh-8.5rem)] lg:overflow-y-auto lg:overscroll-contain lg:rounded-2xl lg:border lg:border-ink/[0.06] lg:bg-white lg:p-5 lg:shadow-soft ${
+          isPending ? 'opacity-60' : ''
+        }`}
       >
-        <IoSearchOutline className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-        <input
-          type="search"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          placeholder={searchPlaceholder}
-          className="w-full rounded-md border border-gray-200 py-2.5 pl-9 pr-3 text-sm focus:border-primary focus:outline-none"
-        />
-      </form>
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            apply('search', search || null);
+          }}
+          className='relative'
+        >
+          <LuSearch className='pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-ink/40' />
+          <input
+            type='search'
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder={searchPlaceholder}
+            className='input !rounded-full !pl-10 !pr-10 [&::-webkit-search-cancel-button]:hidden'
+          />
+          {search && (
+            <button
+              type='button'
+              aria-label='Clear search'
+              onClick={() => {
+                setSearch('');
+                apply('search', null);
+              }}
+              className='absolute right-3 top-1/2 flex h-6 w-6 -translate-y-1/2 items-center justify-center rounded-full text-ink/40 hover:bg-ink/5 hover:text-ink'
+            >
+              <LuX className='h-3.5 w-3.5' />
+            </button>
+          )}
+        </form>
 
-      {groups.map((group) => {
-        const active = params.get(group.param) ?? group.options[0]?.value ?? '';
-        return (
-          <div key={group.title} className="mb-8">
-            <p className="mb-3 text-sm font-medium text-primary">{group.title}</p>
-            <ul className="space-y-1">
-              {group.options.map((opt) => {
-                const isActive = active === opt.value;
-                return (
-                  <li key={opt.value}>
-                    <button
-                      type="button"
-                      onClick={() => apply(group.param, opt.value)}
-                      className={`w-full rounded-md px-3 py-2 text-left text-sm transition-colors ${
-                        isActive
-                          ? 'bg-gray-100 font-semibold text-gray-900'
-                          : 'text-gray-600 hover:bg-gray-50'
-                      }`}
-                    >
-                      {opt.label}
-                    </button>
-                  </li>
-                );
-              })}
-            </ul>
-          </div>
-        );
-      })}
+        {groups.map((group) => {
+          const active =
+            params.get(group.param) ?? group.options[0]?.value ?? '';
+          return (
+            <div key={group.title} className='mt-6'>
+              <p className='mb-2.5 text-[11px] font-bold uppercase tracking-[0.16em] text-ink/40'>
+                {group.title}
+              </p>
+              <ul className='-mx-5 flex gap-2 overflow-x-auto px-5 pb-1 [scrollbar-width:none] lg:mx-0 lg:flex-col lg:gap-0.5 lg:overflow-visible lg:px-0 lg:pb-0 [&::-webkit-scrollbar]:hidden'>
+                {group.options.map((opt) => {
+                  const isActive = active === opt.value;
+                  return (
+                    <li key={opt.value} className='shrink-0'>
+                      <button
+                        type='button'
+                        aria-pressed={isActive}
+                        onClick={() => apply(group.param, opt.value)}
+                        className={`flex w-full items-center gap-2.5 whitespace-nowrap rounded-full border px-4 py-2 text-sm font-semibold transition-all duration-200 lg:rounded-xl lg:border-transparent lg:px-3 lg:text-left ${
+                          isActive
+                            ? 'border-ink bg-ink text-white lg:bg-primary/[0.08] lg:text-primary'
+                            : 'border-ink/10 bg-white text-ink/65 hover:border-ink/20 hover:text-ink lg:bg-transparent lg:hover:bg-surface'
+                        }`}
+                      >
+                        <span
+                          className={`hidden h-1.5 w-1.5 rounded-full transition-colors lg:block ${
+                            isActive ? 'bg-primary' : 'bg-ink/15'
+                          }`}
+                        />
+                        {opt.label}
+                      </button>
+                    </li>
+                  );
+                })}
+              </ul>
+            </div>
+          );
+        })}
+      </div>
     </aside>
   );
 };

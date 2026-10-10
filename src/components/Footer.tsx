@@ -1,14 +1,10 @@
-"use client"
+'use client';
 
 import React, { useState } from 'react';
-import Link from 'next/link';
 import Image from 'next/image';
+import Link from 'next/link';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import {
-  faPhone,
-  faEnvelope,
-  faLocationDot
-} from '@fortawesome/free-solid-svg-icons';
+import type { IconProp } from '@fortawesome/fontawesome-svg-core';
 import {
   faXTwitter,
   faLinkedin,
@@ -17,40 +13,61 @@ import {
   faWhatsapp,
   faYoutube,
 } from '@fortawesome/free-brands-svg-icons';
+import { LuArrowRight, LuMail, LuMapPin, LuPhone } from 'react-icons/lu';
 import { toast } from 'react-toastify';
-import type { IconProp } from '@fortawesome/fontawesome-svg-core';
+import logo from '@/assets/images/logo.svg';
 import { API_URL } from '@/lib/api';
+import Aurora from './ui/Aurora';
 
 interface FooterProps {
-  logo: string;
   address: string;
   phone: string;
   email: string;
 }
 
-const PRODUCT_LINKS = [
+const EXPLORE_LINKS = [
   { label: 'Projects', href: '/projects' },
   { label: 'Careers', href: '/careers' },
+  { label: 'Management', href: '/careers?view=management' },
   { label: 'Content', href: '/content' },
-  { label: 'About Us', href: '/#our-identity' },
+  { label: 'About us', href: '/#our-identity' },
 ];
 
 const SOCIAL_LINKS = [
-  { icon: faXTwitter, name: 'X-Twitter', url: 'https://x.com/devstrikeltd' },
-  { icon: faLinkedin, name: 'LinkedIn', url: 'https://www.linkedin.com/in/devstrike-digital-limited/' },
-  { icon: faGithub, name: 'GitHub', url: 'https://github.com/Devstrike-DigTech' },
-  { icon: faInstagram, name: 'Instagram', url: 'https://www.instagram.com/devstrike.limited/profilecard/?igsh=MjR2OWEyamhvMnF4' },
-  { icon: faWhatsapp, name: "What's App", url: 'https://wa.me/2348132665650' },
-  { icon: faYoutube, name: 'Youtube', url: 'https://www.youtube.com/@devstrike' },
+  { icon: faXTwitter, name: 'X (Twitter)', url: 'https://x.com/devstrikeltd' },
+  {
+    icon: faLinkedin,
+    name: 'LinkedIn',
+    url: 'https://www.linkedin.com/in/devstrike-digital-limited/',
+  },
+  {
+    icon: faGithub,
+    name: 'GitHub',
+    url: 'https://github.com/Devstrike-DigTech',
+  },
+  {
+    icon: faInstagram,
+    name: 'Instagram',
+    url: 'https://www.instagram.com/devstrike.limited/profilecard/?igsh=MjR2OWEyamhvMnF4',
+  },
+  { icon: faWhatsapp, name: 'WhatsApp', url: 'https://wa.me/2348132665650' },
+  {
+    icon: faYoutube,
+    name: 'YouTube',
+    url: 'https://www.youtube.com/@devstrike',
+  },
 ];
 
-const Footer: React.FC<FooterProps> = ({ logo, address, phone, email }) => {
-  const [formData, setFormData] = useState({
-    contactType: '',
-    name: '',
-    email: '',
-    message: ''
-  });
+const CONTACT_TYPES = [
+  { value: 'enquiry', label: 'Enquiry' },
+  { value: 'service', label: 'Service' },
+  { value: 'investment', label: 'Investment' },
+];
+
+const EMPTY_FORM = { contactType: 'enquiry', name: '', email: '', message: '' };
+
+const Footer: React.FC<FooterProps> = ({ address, phone, email }) => {
+  const [formData, setFormData] = useState(EMPTY_FORM);
   const [isLoading, setIsLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -63,8 +80,8 @@ const Footer: React.FC<FooterProps> = ({ logo, address, phone, email }) => {
         body: JSON.stringify(formData),
       });
       if (!res.ok) throw new Error('Request failed');
-      toast.success('Message sent successfully!');
-      setFormData({ contactType: '', name: '', email: '', message: '' });
+      toast.success('Message sent — thank you for reaching out!');
+      setFormData(EMPTY_FORM);
     } catch {
       toast.error('Failed to send message. Please try again.');
     } finally {
@@ -72,163 +89,225 @@ const Footer: React.FC<FooterProps> = ({ logo, address, phone, email }) => {
     }
   };
 
-  const currentYear = new Date().getFullYear();
-
-  const inputClasses =
-    'w-full px-3 py-2.5 rounded-lg bg-white/5 border border-white/15 text-sm text-white placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-primary';
+  const contactRows = [
+    { icon: LuMapPin, label: 'Head office', value: address },
+    {
+      icon: LuPhone,
+      label: 'Phone',
+      value: phone,
+      href: `tel:${phone.replace(/[^\d+]/g, '')}`,
+    },
+    { icon: LuMail, label: 'Email', value: email, href: `mailto:${email}` },
+  ];
 
   return (
-    <footer id="footer" className="bg-ink text-white">
-      <div className="container mx-auto px-4 md:px-6 lg:px-8 py-14">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-[1.3fr_0.8fr_0.8fr_1.1fr] gap-10 lg:gap-12 mb-12">
-          {/* Company info */}
-          <div className="space-y-4">
-            <Image
-              src={logo}
-              alt="Devstrike"
-              width={56}
-              height={56}
-              className="rounded-lg object-cover"
-            />
-            <p className="text-xs tracking-widest text-gray-400">&lt;/dev strike&gt;</p>
-            <div className="space-y-3">
-              <div className="flex items-start gap-3">
-                <FontAwesomeIcon icon={faLocationDot} className="mt-1 h-4 w-4 text-gray-400" />
-                <p className="text-sm text-gray-300">
-                  <span className="font-semibold text-white">Head Office: </span>
-                  {address}
-                </p>
-              </div>
-              <div className="flex items-start gap-3">
-                <FontAwesomeIcon icon={faPhone} className="mt-1 h-4 w-4 text-gray-400" />
-                <p className="text-sm text-gray-300">
-                  <span className="font-semibold text-white">Phone: </span>
-                  {phone}
-                </p>
-              </div>
-              <div className="flex items-start gap-3">
-                <FontAwesomeIcon icon={faEnvelope} className="mt-1 h-4 w-4 text-gray-400" />
-                <p className="text-sm text-gray-300">
-                  <span className="font-semibold text-white">Email: </span>
-                  {email}
-                </p>
-              </div>
+    <footer
+      id='footer'
+      className='relative scroll-mt-24 overflow-hidden bg-ink-950 text-white'
+    >
+      <div className='opacity-60'>
+        <Aurora />
+      </div>
+
+      <div className='container relative pb-10 pt-20 md:pt-28'>
+        <div className='grid gap-14 lg:grid-cols-[1fr_1.05fr] lg:gap-20'>
+          <div>
+            <span className='eyebrow-light'>
+              <span className='h-1.5 w-1.5 rounded-full bg-emerald-400' />
+              Get in touch
+            </span>
+            <h2 className='mt-6 text-4xl font-extrabold leading-[1.05] md:text-5xl'>
+              Let&apos;s build something{' '}
+              <span className='text-gradient-light'>worth using.</span>
+            </h2>
+            <p className='mt-5 max-w-md text-lg leading-relaxed text-white/60'>
+              Tell us about your idea, project, or partnership — the right
+              person on our team will get back to you.
+            </p>
+
+            <ul className='mt-10 space-y-5'>
+              {contactRows.map((row) => {
+                const content = (
+                  <>
+                    <span className='flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-white/10 bg-white/5 text-pink-300 transition-colors group-hover:border-white/25'>
+                      <row.icon className='h-5 w-5' />
+                    </span>
+                    <span>
+                      <span className='block text-xs font-semibold uppercase tracking-wider text-white/40'>
+                        {row.label}
+                      </span>
+                      <span className='mt-0.5 block text-[15px] text-white/85 transition-colors group-hover:text-white'>
+                        {row.value}
+                      </span>
+                    </span>
+                  </>
+                );
+                return (
+                  <li key={row.label}>
+                    {row.href ? (
+                      <a
+                        href={row.href}
+                        className='group flex items-start gap-4'
+                      >
+                        {content}
+                      </a>
+                    ) : (
+                      <div className='group flex items-start gap-4'>
+                        {content}
+                      </div>
+                    )}
+                  </li>
+                );
+              })}
+            </ul>
+
+            <div className='mt-10 flex flex-wrap gap-2.5'>
+              {SOCIAL_LINKS.map((social) => (
+                <a
+                  key={social.name}
+                  href={social.url}
+                  target='_blank'
+                  rel='noopener noreferrer'
+                  aria-label={social.name}
+                  className='flex h-11 w-11 items-center justify-center rounded-full border border-white/10 bg-white/5 text-white/70 transition-all duration-300 hover:-translate-y-0.5 hover:border-white/30 hover:bg-white/10 hover:text-white'
+                >
+                  <FontAwesomeIcon
+                    icon={social.icon as IconProp}
+                    className='h-4 w-4'
+                  />
+                </a>
+              ))}
             </div>
           </div>
 
-          {/* Product links */}
-          <div>
-            <h3 className="mb-4 text-sm font-semibold uppercase tracking-wide text-gray-400">
-              Product
-            </h3>
-            <ul className="space-y-2.5">
-              {PRODUCT_LINKS.map((item) => (
-                <li key={item.label}>
-                  <Link
-                    href={item.href}
-                    className="text-sm text-gray-300 transition-colors hover:text-white"
+          <form
+            onSubmit={handleSubmit}
+            className='rounded-3xl border border-white/10 bg-white/[0.04] p-6 shadow-2xl backdrop-blur-xl md:p-8'
+          >
+            <p className='text-sm font-semibold text-white/50'>
+              I&apos;m reaching out about
+            </p>
+            <div className='mt-3 grid grid-cols-3 gap-1 rounded-2xl bg-white/[0.05] p-1'>
+              {CONTACT_TYPES.map((type) => {
+                const active = formData.contactType === type.value;
+                return (
+                  <button
+                    key={type.value}
+                    type='button'
+                    aria-pressed={active}
+                    onClick={() =>
+                      setFormData({ ...formData, contactType: type.value })
+                    }
+                    className={`rounded-xl py-2.5 text-sm font-bold transition-all duration-300 ${
+                      active
+                        ? 'bg-white text-ink shadow-lg'
+                        : 'text-white/60 hover:text-white'
+                    }`}
                   >
-                    {item.label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
+                    {type.label}
+                  </button>
+                );
+              })}
+            </div>
 
-          {/* Social links */}
-          <div>
-            <h3 className="mb-4 text-sm font-semibold uppercase tracking-wide text-gray-400">
-              Social
-            </h3>
-            <ul className="space-y-2.5">
-              {SOCIAL_LINKS.map((social) => (
-                <li key={social.name}>
-                  <Link
-                    href={social.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="group flex items-center gap-3"
-                  >
-                    <FontAwesomeIcon
-                      icon={social.icon as IconProp}
-                      className="h-4 w-4 text-gray-400 transition-colors group-hover:text-white"
-                    />
-                    <span className="text-sm text-gray-300 transition-colors group-hover:text-white">
-                      {social.name}
-                    </span>
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
+            <div className='mt-5 grid gap-4 sm:grid-cols-2'>
+              <label className='block'>
+                <span className='mb-1.5 block text-sm font-semibold text-white/60'>
+                  Name
+                </span>
+                <input
+                  type='text'
+                  placeholder='Ada Lovelace'
+                  value={formData.name}
+                  onChange={(e) =>
+                    setFormData({ ...formData, name: e.target.value })
+                  }
+                  className='input-dark'
+                  required
+                  minLength={2}
+                />
+              </label>
+              <label className='block'>
+                <span className='mb-1.5 block text-sm font-semibold text-white/60'>
+                  Email
+                </span>
+                <input
+                  type='email'
+                  placeholder='you@company.com'
+                  value={formData.email}
+                  onChange={(e) =>
+                    setFormData({ ...formData, email: e.target.value })
+                  }
+                  className='input-dark'
+                  required
+                />
+              </label>
+            </div>
 
-          {/* Contact form */}
-          <div>
-            <h3 className="mb-4 text-sm font-semibold uppercase tracking-wide text-gray-400">
-              Contact Form
-            </h3>
-            <form onSubmit={handleSubmit} className="space-y-3">
-              <select
-                value={formData.contactType}
-                onChange={(e) => setFormData({ ...formData, contactType: e.target.value })}
-                className={inputClasses}
-                required
-              >
-                <option value="" className="text-black">Contact Type</option>
-                <option value="enquiry" className="text-black">Enquiry</option>
-                <option value="investment" className="text-black">Investment</option>
-                <option value="service" className="text-black">Service</option>
-              </select>
-
-              <input
-                type="text"
-                placeholder="Name"
-                value={formData.name}
-                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                className={inputClasses}
-                required
-              />
-
-              <input
-                type="email"
-                placeholder="Email"
-                value={formData.email}
-                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                className={inputClasses}
-                required
-              />
-
+            <label className='mt-4 block'>
+              <span className='mb-1.5 block text-sm font-semibold text-white/60'>
+                Message
+              </span>
               <textarea
-                placeholder="Message"
+                placeholder='Tell us a little about what you have in mind…'
                 value={formData.message}
-                onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                className={`${inputClasses} min-h-[90px]`}
+                onChange={(e) =>
+                  setFormData({ ...formData, message: e.target.value })
+                }
+                className='input-dark min-h-[140px] resize-y'
                 required
+                minLength={5}
               />
+            </label>
 
-              <button
-                type="submit"
-                disabled={isLoading}
-                className="rounded-lg bg-primary px-6 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-primary/80 disabled:opacity-60"
-              >
-                {isLoading ? 'Sending…' : 'Submit'}
-              </button>
-            </form>
-          </div>
+            <button
+              type='submit'
+              disabled={isLoading}
+              className='btn-primary group mt-6 w-full !py-3.5'
+            >
+              {isLoading ? 'Sending…' : 'Send message'}
+              {!isLoading && <LuArrowRight className='btn-arrow h-4 w-4' />}
+            </button>
+          </form>
         </div>
 
-        <div className="my-8 h-px bg-[#881B51]" />
+        <div className='mt-20 flex flex-col gap-8 border-t border-white/10 pt-10 md:flex-row md:items-start md:justify-between'>
+          <div>
+            <Link href='/' className='flex items-center gap-2.5'>
+              <Image src={logo} alt='' width={34} height={34} />
+              <span className='text-lg font-extrabold tracking-tight'>
+                devstrike
+              </span>
+            </Link>
+            <p className='mt-2 font-mono text-xs tracking-widest text-white/35'>
+              &lt;/dev strike&gt;
+            </p>
+          </div>
 
-        <div className="flex flex-col items-center justify-between gap-4 md:flex-row">
-          <p className="text-sm text-gray-400">
-            © {currentYear} Devstrike. All rights reserved.
+          <nav aria-label='Footer' className='flex flex-wrap gap-x-8 gap-y-3'>
+            {EXPLORE_LINKS.map((item) => (
+              <Link
+                key={item.label}
+                href={item.href}
+                className='text-sm font-semibold text-white/55 transition-colors hover:text-white'
+              >
+                {item.label}
+              </Link>
+            ))}
+          </nav>
+        </div>
+
+        <div className='mt-10 flex flex-col items-start justify-between gap-4 text-sm text-white/40 md:flex-row md:items-center'>
+          <p>
+            © {new Date().getFullYear()} Devstrike Digital Limited. All rights
+            reserved.
           </p>
-          <div className="flex items-center gap-6">
+          <div className='flex items-center gap-6'>
             {['Terms', 'Privacy', 'Cookies'].map((item) => (
               <Link
                 key={item}
                 href={`/${item.toLowerCase()}`}
-                className="text-sm text-gray-400 transition-colors hover:text-white"
+                className='transition-colors hover:text-white'
               >
                 {item}
               </Link>

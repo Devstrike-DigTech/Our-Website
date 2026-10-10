@@ -1,7 +1,16 @@
+import Link from 'next/link';
 import { notFound } from 'next/navigation';
+import { LuArrowRight, LuClock, LuWallet } from 'react-icons/lu';
 import ApplyForm from '@/components/ApplyForm';
-import Breadcrumb from '@/components/Breadcrumb';
 import PageHero from '@/components/PageHero';
+import {
+  CheckList,
+  DetailSection,
+  FactRow,
+  Paragraphs,
+  SideCard,
+} from '@/components/ui/Content';
+import Reveal from '@/components/ui/Reveal';
 import { apiGet, Vacancy } from '@/lib/api';
 
 interface Props {
@@ -11,24 +20,11 @@ interface Props {
 export async function generateMetadata({ params }: Props) {
   const vacancy = await apiGet<Vacancy | null>(`/vacancies/${params.id}`, null);
   return {
-    title: vacancy ? `${vacancy.title} — Careers — Devstrike` : 'Careers — Devstrike',
+    title: vacancy
+      ? `${vacancy.title} — Careers — Devstrike`
+      : 'Careers — Devstrike',
     description: vacancy?.summary,
   };
-}
-
-function Paragraphs({ text }: { text: string }) {
-  return (
-    <>
-      {text
-        .split('\n')
-        .filter(Boolean)
-        .map((para, i) => (
-          <p key={i} className="mb-4 leading-relaxed text-gray-600">
-            {para}
-          </p>
-        ))}
-    </>
-  );
 }
 
 export default async function VacancyDetailPage({ params }: Props) {
@@ -38,93 +34,123 @@ export default async function VacancyDetailPage({ params }: Props) {
   return (
     <main>
       <PageHero
-        title="Careers"
-        subtitle="Work on real products with real ownership — join the team building Devstrike."
-      />
-      <Breadcrumb
-        items={[
+        crumbs={[
           { label: 'Careers', href: '/careers' },
-          { label: 'Job Information' },
+          { label: vacancy.title },
         ]}
-      />
-
-      <div className="container mx-auto px-4 pb-16 md:px-6 lg:px-8">
-        <div className="mx-auto max-w-4xl">
-          <div className="flex flex-col justify-between gap-4 md:flex-row md:items-center">
-            <div>
-              <h1 className="text-3xl font-bold text-gray-900">{vacancy.title}</h1>
-              {vacancy.project && (
-                <p className="mt-1 text-sm font-medium text-primary">
-                  • {vacancy.project.title}
-                </p>
-              )}
-            </div>
-            <ApplyForm vacancyId={vacancy.id} vacancyTitle={vacancy.title} />
-          </div>
-
-          <div className="mt-6">
-            <Paragraphs text={vacancy.summary} />
-            {vacancy.skillSet.length > 0 && (
-              <p className="text-gray-700">
-                <span className="font-semibold">Skill Set:</span>{' '}
-                {vacancy.skillSet.join(', ')}.
-              </p>
+        eyebrow={
+          <div className='flex flex-wrap items-center gap-2'>
+            <span className='eyebrow-light'>{vacancy.role}</span>
+            {vacancy.project && (
+              <span className='eyebrow-light'>{vacancy.project.title}</span>
             )}
-            <div className="mt-3 flex items-center gap-6 text-sm text-gray-500">
-              <span>{vacancy.payType}</span>
-              {vacancy.salaryRange && <span>{vacancy.salaryRange}</span>}
-            </div>
           </div>
+        }
+        title={vacancy.title}
+        subtitle={vacancy.summary}
+      >
+        <div className='flex flex-col items-start gap-5 sm:flex-row sm:items-center'>
+          <ApplyForm
+            vacancyId={vacancy.id}
+            vacancyTitle={vacancy.title}
+            className='!px-7 !py-4 !text-base'
+          />
+          <div className='flex flex-wrap gap-x-6 gap-y-2 text-sm font-semibold text-white/60'>
+            <span className='flex items-center gap-2'>
+              <LuClock className='h-4 w-4' /> {vacancy.payType}
+            </span>
+            {vacancy.salaryRange && (
+              <span className='flex items-center gap-2'>
+                <LuWallet className='h-4 w-4' /> {vacancy.salaryRange}
+              </span>
+            )}
+          </div>
+        </div>
+      </PageHero>
 
-          {vacancy.fullDescription && (
-            <section className="mt-10 border-t border-gray-100 pt-8">
-              <h2 className="mb-4 text-2xl font-bold text-gray-900">
-                Full Job Description
+      <div className='container grid gap-12 py-14 md:py-20 lg:grid-cols-[minmax(0,1fr)_340px] lg:gap-16'>
+        <article className='min-w-0'>
+          {vacancy.fullDescription ? (
+            <Reveal>
+              <h2 className='mb-6 text-2xl font-extrabold text-ink md:text-3xl'>
+                About the role
               </h2>
               <Paragraphs text={vacancy.fullDescription} />
-            </section>
+            </Reveal>
+          ) : (
+            <Reveal>
+              <Paragraphs text={vacancy.summary} />
+            </Reveal>
           )}
 
           {vacancy.responsibilities.length > 0 && (
-            <section className="mt-8">
-              <h2 className="mb-4 text-xl font-bold text-gray-900">
-                Responsibilities
-              </h2>
-              {vacancy.responsibilitiesIntro && (
-                <p className="mb-4 leading-relaxed text-gray-600">
-                  {vacancy.responsibilitiesIntro}
-                </p>
-              )}
-              <ol className="list-decimal space-y-2 pl-5 text-gray-600">
-                {vacancy.responsibilities.map((item, i) => (
-                  <li key={i} className="leading-relaxed">
-                    {item}
-                  </li>
-                ))}
-              </ol>
-            </section>
+            <DetailSection
+              title='Responsibilities'
+              intro={vacancy.responsibilitiesIntro}
+            >
+              <CheckList items={vacancy.responsibilities} />
+            </DetailSection>
           )}
 
           {vacancy.requirements.length > 0 && (
-            <section className="mt-8">
-              <h2 className="mb-4 text-xl font-bold text-gray-900">
-                Requirements
-              </h2>
-              {vacancy.requirementsIntro && (
-                <p className="mb-4 leading-relaxed text-gray-600">
-                  {vacancy.requirementsIntro}
-                </p>
+            <DetailSection
+              title='Requirements'
+              intro={vacancy.requirementsIntro}
+            >
+              <CheckList items={vacancy.requirements} />
+            </DetailSection>
+          )}
+        </article>
+
+        <aside className='space-y-5 lg:sticky lg:top-28 lg:self-start'>
+          <SideCard title='Role overview'>
+            <dl>
+              <FactRow label='Role'>{vacancy.role}</FactRow>
+              <FactRow label='Pay type'>{vacancy.payType}</FactRow>
+              {vacancy.salaryRange && (
+                <FactRow label='Salary'>{vacancy.salaryRange}</FactRow>
               )}
-              <ol className="list-decimal space-y-2 pl-5 text-gray-600">
-                {vacancy.requirements.map((item, i) => (
-                  <li key={i} className="leading-relaxed">
-                    {item}
+              {vacancy.project && (
+                <FactRow label='Project'>
+                  <Link
+                    href={`/projects/${vacancy.project.slug}`}
+                    className='inline-flex items-center gap-1 text-primary hover:underline'
+                  >
+                    {vacancy.project.title}
+                  </Link>
+                </FactRow>
+              )}
+            </dl>
+            <ApplyForm
+              vacancyId={vacancy.id}
+              vacancyTitle={vacancy.title}
+              className='mt-6 w-full !py-3.5'
+            />
+          </SideCard>
+
+          {vacancy.skillSet.length > 0 && (
+            <SideCard title='Skill set'>
+              <ul className='flex flex-wrap gap-2'>
+                {vacancy.skillSet.map((skill) => (
+                  <li
+                    key={skill}
+                    className='chip !bg-primary/[0.06] !text-primary'
+                  >
+                    {skill}
                   </li>
                 ))}
-              </ol>
-            </section>
+              </ul>
+            </SideCard>
           )}
-        </div>
+
+          <Link
+            href='/careers'
+            className='group flex items-center justify-between rounded-2xl border border-ink/[0.06] px-5 py-4 text-sm font-bold text-ink/70 transition-colors hover:border-primary/30 hover:text-primary'
+          >
+            Browse all open roles
+            <LuArrowRight className='h-4 w-4 transition-transform group-hover:translate-x-1' />
+          </Link>
+        </aside>
       </div>
     </main>
   );

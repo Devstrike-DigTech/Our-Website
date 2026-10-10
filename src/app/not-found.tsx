@@ -1,35 +1,41 @@
-"use client";
+import Link from 'next/link';
+import { LuArrowRight } from 'react-icons/lu';
+import Aurora from '@/components/ui/Aurora';
 
-import React from "react";
-import Link from "next/link";
-import Lottie from "lottie-react";
-
-import animationData from "../../public/lottie/teamwork.json"; // Adjust the path to your Lottie file
-
-const Custom404: React.FC = () => {
-  const routeName = ""; // Replace with dynamic route if needed
-
+export default function NotFound() {
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen text-center bg-gray-100">
-      {/* Lottie Animation */}
-      <div className="w-3/4 max-w-xl">
-        <Lottie animationData={animationData} loop={true} />
+    <main className='relative flex min-h-[80vh] items-center overflow-hidden bg-ink-950 text-white'>
+      <Aurora />
+      <div className='container relative py-40 text-center'>
+        <p className='animate-fade-up text-[7rem] font-extrabold leading-none tracking-tighter text-gradient-light md:text-[11rem]'>
+          404
+        </p>
+        <h1
+          className='mx-auto mt-4 max-w-xl animate-fade-up text-3xl font-extrabold md:text-4xl'
+          style={{ animationDelay: '100ms' }}
+        >
+          We&apos;re cooking something amazing for this page.
+        </h1>
+        <p
+          className='mx-auto mt-4 max-w-md animate-fade-up text-lg text-white/60'
+          style={{ animationDelay: '180ms' }}
+        >
+          It isn&apos;t ready yet — or the link may be wrong. Here&apos;s where
+          to go next.
+        </p>
+        <div
+          className='mt-10 flex animate-fade-up flex-col justify-center gap-3 sm:flex-row'
+          style={{ animationDelay: '260ms' }}
+        >
+          <Link href='/' className='btn-primary group !px-7 !py-4'>
+            Back to home
+            <LuArrowRight className='btn-arrow h-4 w-4' />
+          </Link>
+          <Link href='/projects' className='btn-ghost-light !px-7 !py-4'>
+            Explore projects
+          </Link>
+        </div>
       </div>
-
-      {/* Text */}
-      <h1 className="mt-6 text-2xl font-semibold text-gray-800">
-        We&apos;re cooking something amazing for this
-        <span className="text-blue-600 font-bold">{routeName}</span> page.
-      </h1>
-
-      {/* Button */}
-      <Link href="/" passHref>
-        <button className="mt-6 px-6 py-3 text-lg font-medium text-white bg-gradient-to-b from-primary to-[#353B77] hover:from-[#353B77] hover:to-primary rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:ring-opacity-50">
-          Go Back Home
-        </button>
-      </Link>
-    </div>
+    </main>
   );
-};
-
-export default Custom404;
+}

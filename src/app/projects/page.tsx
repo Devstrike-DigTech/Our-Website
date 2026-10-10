@@ -3,7 +3,10 @@ import FilterSidebar from '@/components/FilterSidebar';
 import PageHero from '@/components/PageHero';
 import Pagination from '@/components/Pagination';
 import ProjectCard from '@/components/cards/ProjectCard';
+import { EmptyState } from '@/components/ui/Content';
+import Reveal from '@/components/ui/Reveal';
 import { apiGet, emptyPage, Paginated, Project } from '@/lib/api';
+import { plural } from '@/lib/format';
 
 export const metadata: Metadata = {
   title: 'Projects — Devstrike',
@@ -27,7 +30,7 @@ export default async function ProjectsPage({ searchParams }: Props) {
   if (searchParams.industry) params.set('industry', searchParams.industry);
   if (searchParams.search) params.set('search', searchParams.search);
   params.set('page', searchParams.page ?? '1');
-  params.set('limit', '5');
+  params.set('limit', '6');
 
   const [data, industries] = await Promise.all([
     apiGet<Paginated<Project>>(`/projects?${params}`, emptyPage<Project>()),
@@ -37,19 +40,29 @@ export default async function ProjectsPage({ searchParams }: Props) {
   const hrefFor = (page: number) => {
     const next = new URLSearchParams(params);
     next.set('page', String(page));
-    return `/projects?${next.toString()}`;
+    next.delete('limit');
+    return `/projects?${next.toString()}#results`;
   };
 
   return (
     <main>
       <PageHero
-        title="Projects"
-        subtitle="The products we are building — each one a solution to a real problem, engineered the tech way."
+        eyebrow={<span className='eyebrow-light'>Our portfolio</span>}
+        title={
+          <>
+            Products that solve{' '}
+            <span className='text-gradient-light'>real problems.</span>
+          </>
+        }
+        subtitle='The products we are building — each one a solution to a real problem, engineered the tech way.'
       />
 
-      <div className="container mx-auto flex flex-col gap-10 px-4 py-12 md:px-6 lg:flex-row lg:gap-14 lg:px-8">
+      <section
+        id='results'
+        className='container flex scroll-mt-24 flex-col gap-10 py-14 md:py-20 lg:flex-row lg:gap-12'
+      >
         <FilterSidebar
-          searchPlaceholder="Search projects"
+          searchPlaceholder='Search projects'
           groups={[
             {
               title: 'Status',
@@ -72,22 +85,35 @@ export default async function ProjectsPage({ searchParams }: Props) {
           ]}
         />
 
-        <div className="min-w-0 flex-1">
+        <div className='min-w-0 flex-1'>
           {data.items.length === 0 ? (
-            <p className="py-16 text-center text-gray-500">
-              No projects match these filters yet.
-            </p>
+            <EmptyState
+              title='No projects found'
+              description='Nothing matches these filters yet — try another status or industry.'
+              resetHref='/projects'
+            />
           ) : (
-            <div className="space-y-12">
-              {data.items.map((project) => (
-                <ProjectCard key={project.id} project={project} />
-              ))}
-            </div>
+            <>
+              <p className='mb-6 text-sm font-semibold text-ink/50'>
+                Showing {data.items.length} of {plural(data.total, 'project')}
+              </p>
+              <div className='grid gap-6 md:grid-cols-2'>
+                {data.items.map((project, i) => (
+                  <Reveal
+                    key={project.id}
+                    delay={(i % 2) * 90}
+                    className='h-full'
+                  >
+                    <ProjectCard project={project} priority={i === 0} />
+                  </Reveal>
+                ))}
+              </div>
+            </>
           )}
 
           <Pagination page={data.page} pages={data.pages} hrefFor={hrefFor} />
         </div>
-      </div>
+      </section>
     </main>
   );
 }

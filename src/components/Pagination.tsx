@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import React from 'react';
+import { LuArrowLeft, LuArrowRight } from 'react-icons/lu';
 
 interface PaginationProps {
   page: number;
@@ -10,57 +11,72 @@ interface PaginationProps {
 
 function pageNumbers(page: number, pages: number): (number | '…')[] {
   if (pages <= 7) return Array.from({ length: pages }, (_, i) => i + 1);
-  if (page <= 3) return [1, 2, 3, '…', pages - 2, pages - 1, pages];
-  if (page >= pages - 2) return [1, 2, 3, '…', pages - 2, pages - 1, pages];
+  if (page <= 3) return [1, 2, 3, 4, '…', pages];
+  if (page >= pages - 2)
+    return [1, '…', pages - 3, pages - 2, pages - 1, pages];
   return [1, '…', page - 1, page, page + 1, '…', pages];
 }
 
 const Pagination: React.FC<PaginationProps> = ({ page, pages, hrefFor }) => {
   if (pages <= 1) return null;
 
-  const btn =
-    'flex items-center gap-2 rounded-md border border-gray-200 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50';
+  const edge =
+    'inline-flex items-center gap-2 rounded-full border border-ink/10 bg-white px-4 py-2.5 text-sm font-bold text-ink/70 shadow-soft transition-all duration-200 hover:-translate-y-0.5 hover:border-primary/30 hover:text-primary';
+  const disabled = 'pointer-events-none opacity-40';
 
   return (
-    <div className="mt-12 flex items-center justify-between gap-4">
+    <nav
+      aria-label='Pagination'
+      className='mt-14 flex items-center justify-between gap-4'
+    >
       {page > 1 ? (
-        <Link href={hrefFor(page - 1)} className={btn}>
-          ← Previous
+        <Link href={hrefFor(page - 1)} className={edge}>
+          <LuArrowLeft className='h-4 w-4' /> Previous
         </Link>
       ) : (
-        <span className={`${btn} pointer-events-none opacity-40`}>← Previous</span>
+        <span className={`${edge} ${disabled}`}>
+          <LuArrowLeft className='h-4 w-4' /> Previous
+        </span>
       )}
 
-      <div className="hidden items-center gap-1 sm:flex">
+      <ol className='hidden items-center gap-1 rounded-full border border-ink/[0.06] bg-white p-1 shadow-soft sm:flex'>
         {pageNumbers(page, pages).map((n, i) =>
           n === '…' ? (
-            <span key={`e${i}`} className="px-2 text-gray-400">
+            <li key={`gap-${i}`} className='px-2 text-sm text-ink/30'>
               …
-            </span>
+            </li>
           ) : (
-            <Link
-              key={n}
-              href={hrefFor(n)}
-              className={`flex h-9 w-9 items-center justify-center rounded-md text-sm ${
-                n === page
-                  ? 'border border-primary font-semibold text-primary'
-                  : 'text-gray-600 hover:bg-gray-50'
-              }`}
-            >
-              {n}
-            </Link>
-          ),
+            <li key={n}>
+              <Link
+                href={hrefFor(n)}
+                aria-current={n === page ? 'page' : undefined}
+                className={`flex h-9 w-9 items-center justify-center rounded-full text-sm font-bold transition-all duration-200 ${
+                  n === page
+                    ? 'bg-brand-gradient text-white shadow-glow'
+                    : 'text-ink/55 hover:bg-surface hover:text-ink'
+                }`}
+              >
+                {n}
+              </Link>
+            </li>
+          )
         )}
-      </div>
+      </ol>
+
+      <span className='text-sm font-semibold text-ink/50 sm:hidden'>
+        Page {page} of {pages}
+      </span>
 
       {page < pages ? (
-        <Link href={hrefFor(page + 1)} className={btn}>
-          Next →
+        <Link href={hrefFor(page + 1)} className={edge}>
+          Next <LuArrowRight className='h-4 w-4' />
         </Link>
       ) : (
-        <span className={`${btn} pointer-events-none opacity-40`}>Next →</span>
+        <span className={`${edge} ${disabled}`}>
+          Next <LuArrowRight className='h-4 w-4' />
+        </span>
       )}
-    </div>
+    </nav>
   );
 };
 

@@ -1,8 +1,6 @@
-import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faUser } from '@fortawesome/free-regular-svg-icons';
 import {
   faXTwitter,
   faLinkedin,
@@ -11,9 +9,17 @@ import {
   faInstagram,
 } from '@fortawesome/free-brands-svg-icons';
 import type { IconProp } from '@fortawesome/fontawesome-svg-core';
-import Breadcrumb from '@/components/Breadcrumb';
+import { LuArrowLeft } from 'react-icons/lu';
 import PageHero from '@/components/PageHero';
-import { apiGet, resolveImage, TeamMember } from '@/lib/api';
+import {
+  CheckList,
+  DetailSection,
+  Paragraphs,
+  SideCard,
+} from '@/components/ui/Content';
+import Avatar from '@/components/ui/Avatar';
+import Reveal from '@/components/ui/Reveal';
+import { apiGet, TeamMember } from '@/lib/api';
 
 interface Props {
   params: { id: string };
@@ -28,27 +34,18 @@ const SOCIAL_ICONS: Record<string, typeof faXTwitter> = {
   instagram: faInstagram,
 };
 
+const TIER_LABEL: Record<TeamMember['tier'], string> = {
+  ceo: 'Chief Executive Officer',
+  board: 'Board of Directors',
+  'department-head': 'Department Head',
+};
+
 export async function generateMetadata({ params }: Props) {
   const member = await apiGet<TeamMember | null>(`/team/${params.id}`, null);
   return {
     title: member ? `${member.name} — Devstrike` : 'Management — Devstrike',
     description: member?.summary,
   };
-}
-
-function Paragraphs({ text }: { text: string }) {
-  return (
-    <>
-      {text
-        .split('\n')
-        .filter(Boolean)
-        .map((para, i) => (
-          <p key={i} className="mb-4 leading-relaxed text-gray-600">
-            {para}
-          </p>
-        ))}
-    </>
-  );
 }
 
 export default async function TeamProfilePage({ params }: Props) {
@@ -60,105 +57,103 @@ export default async function TeamProfilePage({ params }: Props) {
   return (
     <main>
       <PageHero
-        title="Careers"
-        subtitle="Work on real products with real ownership — join the team building Devstrike."
-      />
-      <Breadcrumb
-        items={[
+        crumbs={[
           { label: 'Management', href: '/careers?view=management' },
-          { label: 'Profile' },
+          { label: member.name },
         ]}
-      />
-
-      <div className="container mx-auto px-4 pb-16 md:px-6 lg:px-8">
-        <div className="mx-auto max-w-4xl">
-          <div className="flex items-start justify-between">
-            <div className="relative flex h-20 w-20 items-center justify-center overflow-hidden rounded-full bg-gray-100">
-              {member.avatarUrl ? (
-                <Image
-                  src={resolveImage(member.avatarUrl)!}
-                  alt={member.name}
-                  fill
-                  sizes="80px"
-                  className="object-cover"
-                />
-              ) : (
-                <FontAwesomeIcon icon={faUser} className="h-8 w-8 text-gray-400" />
-              )}
-            </div>
-
-            {socials.length > 0 && (
-              <div className="flex gap-4">
-                {socials.map(([key, url]) => (
-                  <Link
-                    key={key}
-                    href={url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    aria-label={key}
-                    className="text-gray-500 transition-colors hover:text-primary"
-                  >
-                    <FontAwesomeIcon
-                      icon={(SOCIAL_ICONS[key.toLowerCase()] ?? faXTwitter) as IconProp}
-                      className="h-5 w-5"
-                    />
-                  </Link>
-                ))}
-              </div>
-            )}
+        eyebrow={
+          <div>
+            <Avatar
+              name={member.name}
+              src={member.avatarUrl}
+              size={96}
+              className='!ring-white/10'
+            />
+            <p className='mt-6 text-sm font-bold uppercase tracking-[0.16em] text-pink-300'>
+              {member.title}
+            </p>
           </div>
+        }
+        title={member.name}
+        subtitle={member.summary}
+      >
+        {socials.length > 0 && (
+          <div className='flex gap-2.5'>
+            {socials.map(([key, url]) => (
+              <a
+                key={key}
+                href={url}
+                target='_blank'
+                rel='noopener noreferrer'
+                aria-label={key}
+                className='flex h-11 w-11 items-center justify-center rounded-full border border-white/15 bg-white/5 text-white/75 transition-all duration-300 hover:-translate-y-0.5 hover:border-white/35 hover:text-white'
+              >
+                <FontAwesomeIcon
+                  icon={
+                    (SOCIAL_ICONS[key.toLowerCase()] ?? faXTwitter) as IconProp
+                  }
+                  className='h-4 w-4'
+                />
+              </a>
+            ))}
+          </div>
+        )}
+      </PageHero>
 
-          <h1 className="mt-5 text-3xl font-bold text-gray-900">{member.name}</h1>
-          <p className="mt-1 font-medium text-primary">{member.title}</p>
-          {member.summary && (
-            <p className="mt-3 leading-relaxed text-gray-600">{member.summary}</p>
-          )}
-
+      <div className='container grid gap-12 py-14 md:py-20 lg:grid-cols-[minmax(0,1fr)_320px] lg:gap-16'>
+        <article className='min-w-0'>
           {member.bio && (
-            <section className="mt-10 border-t border-gray-100 pt-8">
-              <h2 className="mb-4 text-2xl font-bold text-gray-900">Bio</h2>
+            <Reveal>
+              <h2 className='mb-6 text-2xl font-extrabold text-ink md:text-3xl'>
+                Bio
+              </h2>
               <Paragraphs text={member.bio} />
-            </section>
+            </Reveal>
           )}
 
           {member.responsibilities.length > 0 && (
-            <section className="mt-8">
-              <h2 className="mb-4 text-xl font-bold text-gray-900">
-                Responsibilities
-              </h2>
-              {member.responsibilitiesIntro && (
-                <p className="mb-4 leading-relaxed text-gray-600">
-                  {member.responsibilitiesIntro}
-                </p>
-              )}
-              <ol className="list-decimal space-y-2 pl-5 text-gray-600">
-                {member.responsibilities.map((item, i) => (
-                  <li key={i} className="leading-relaxed">
-                    {item}
-                  </li>
-                ))}
-              </ol>
-            </section>
+            <DetailSection
+              title='Responsibilities'
+              intro={member.responsibilitiesIntro}
+            >
+              <CheckList items={member.responsibilities} />
+            </DetailSection>
           )}
+        </article>
+
+        <aside className='space-y-5 lg:sticky lg:top-28 lg:self-start'>
+          <SideCard title='Leadership group'>
+            <p className='font-extrabold text-ink'>{TIER_LABEL[member.tier]}</p>
+          </SideCard>
 
           {member.skills.length > 0 && (
-            <section className="mt-8">
-              <h2 className="mb-4 text-xl font-bold text-gray-900">Skills</h2>
+            <SideCard title='Skills'>
               {member.skillsIntro && (
-                <p className="mb-4 leading-relaxed text-gray-600">
+                <p className='mb-4 text-sm leading-relaxed text-ink/55'>
                   {member.skillsIntro}
                 </p>
               )}
-              <ol className="list-decimal space-y-2 pl-5 text-gray-600">
-                {member.skills.map((item, i) => (
-                  <li key={i} className="leading-relaxed">
-                    {item}
+              <ul className='flex flex-wrap gap-2'>
+                {member.skills.map((skill) => (
+                  <li
+                    key={skill}
+                    className='chip !bg-primary/[0.06] !text-primary'
+                  >
+                    {skill}
                   </li>
                 ))}
-              </ol>
-            </section>
+              </ul>
+            </SideCard>
           )}
-        </div>
+
+          <Link
+            href='/careers?view=management'
+            className='group flex items-center gap-2 rounded-2xl border border-ink/[0.06] px-5 py-4 text-sm font-bold text-ink/70 transition-colors hover:border-primary/30 hover:text-primary'
+          >
+            <LuArrowLeft className='h-4 w-4 transition-transform group-hover:-translate-x-1' />
+            Back to management
+          </Link>
+        </aside>
       </div>
     </main>
   );
